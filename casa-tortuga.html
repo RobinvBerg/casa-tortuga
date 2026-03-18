@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Casa Tortuga — Lageplan Explorer v2</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; color: #eee; font-family: 'Helvetica Neue', sans-serif; overflow: hidden; height: 100vh; }
+
+#map-wrap {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#map-container {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+#map-img {
+  display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+.marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.15s;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+}
+.marker:hover { transform: translate(-50%, -50%) scale(1.25); }
+
+/* Modal */
+#modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  overflow-y: auto;
+}
+#modal.open { display: flex; }
+
+#modal-header {
+  width: 100%; max-width: 1400px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+#modal-title { font-size: 22px; font-weight: bold; color: #fff; }
+#modal-close {
+  background: rgba(255,255,255,0.1); border: 2px solid #fff; color: #fff;
+  font-size: 22px; width: 52px; height: 52px; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#modal-close:hover { background: rgba(255,255,255,0.25); }
+#modal-back {
+  margin: 24px auto 8px auto;
+  padding: 12px 28px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 15px; border-radius: 8px;
+  cursor: pointer; display: block;
+}
+#modal-back:hover { background: rgba(255,255,255,0.22); }
+
+#photo-grid {
+  width: 100%; max-width: 1400px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+#photo-grid img {
+  width: 100%; height: 220px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  background: #222;
+}
+#photo-grid img:hover { transform: scale(1.03); }
+
+/* Lightbox */
+#lightbox {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.97);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; }
+#lightbox-close {
+  position: fixed; top: 16px; right: 20px;
+  background: rgba(0,0,0,0.7); border: 2px solid #fff; color: #fff;
+  font-size: 24px; width: 52px; height: 52px; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 300; box-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+#lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Hint */
+#hint {
+  position: fixed; bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.65);
+  color: #ccc; font-size: 13px;
+  padding: 6px 14px; border-radius: 20px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Area description */
+.area-description {
+  grid-column: 1/-1;
+  color: #bbb;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid #2e7d32;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Mood Banner */
+.mood-banner {
+  grid-column: 1/-1;
+  margin-bottom: 20px;
+}
+.mood-label {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 8px;
+}
+.mood-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mood-hero-wrap {
+  position: relative;
+}
+.mood-hero-wrap::after {
+  content: 'REFERENZ & STIMMUNG';
+  display: block;
+  margin-top: 16px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #444;
+}
+.mood-strip-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mood-hero {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+  border-radius: 8px;
+  transition: filter 0.3s;
+  filter: brightness(0.9);
+}
+.mood-hero:hover { filter: brightness(1.05); }
+.mood-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.mood-strip img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: filter 0.3s, transform 0.2s;
+  filter: brightness(0.72) saturate(0.9);
+}
+.mood-strip img:hover { filter: brightness(1) saturate(1.1); transform: scale(1.02); }
+
+/* IST / SOLL */
+.ist-soll-wrap {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.ist-soll-label {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.ist-soll-label.ist { color: #aaa; }
+.ist-soll-label.soll { color: #fc0; }
+.ist-soll-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+}
+.ist-soll-img.ist { border: 2px solid #444; }
+.ist-soll-img.soll { border: 2px solid #fc0; }
+.soll-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  border: 2px dashed #fc0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fc0;
+  font-size: 14px;
+  background: rgba(255,200,0,0.04);
+}
+.soll-placeholder span { font-size: 32px; }
+.soll-placeholder p { font-size: 12px; color: #888; text-align: center; }
+
+/* Section divider */
+.section-divider {
+  grid-column: 1/-1;
+  color: #555;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  border-top: 1px solid #2a2a2a;
+  padding-top: 16px;
+}
+
+/* Foto thumbnails */
+.foto-thumb-grid {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.foto-thumb-grid img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  background: #222;
+  border: 2px solid transparent;
+}
+.foto-thumb-grid img:hover { transform: scale(1.03); border-color: #444; }
+
+/* Plant cards */
+.plant-grid {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.plant-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.plant-card:hover { border-color: #2e7d32; }
+.plant-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  background: #1a1a1a;
+}
+.plant-card-body { padding: 12px 14px; }
+.plant-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+.plant-name { font-size: 14px; font-weight: bold; color: #fff; }
+.plant-common { font-size: 12px; color: #888; margin-bottom: 4px; }
+.plant-role {
+  font-size: 10px;
+  color: #2e7d32;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(46,125,50,0.15);
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.plant-why { font-size: 13px; color: #aaa; line-height: 1.5; margin-bottom: 8px; }
+.plant-ziege {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  display: inline-block;
+}
+.plant-ziege.sicher { background: rgba(0,180,80,0.15); color: #0c6; }
+.plant-ziege.gefährdet { background: rgba(255,80,0,0.15); color: #f60; }
+.plant-ziege.bedingt { background: rgba(255,200,0,0.15); color: #fc0; }
+.plant-wiki-link { display: inline-block; margin-top: 8px; font-size: 12px; color: #4af; text-decoration: none; opacity: 0.8; }
+.plant-wiki-link:hover { opacity: 1; text-decoration: underline; }
+
+/* Downloads */
+.download-grid {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #ddd;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.download-btn:hover { background: rgba(255,255,255,0.1); border-color: #555; color: #fff; }
+.download-btn .dl-icon { font-size: 18px; }
+.download-btn .dl-label { display: flex; flex-direction: column; }
+.download-btn .dl-label span { font-size: 10px; color: #666; margin-top: 1px; }
+
+/* Edit mode */
+#edit-bar {
+  position: fixed; top: 12px; right: 12px;
+  z-index: 300;
+  display: none; gap: 8px; align-items: center;
+}
+#edit-btn {
+  background: rgba(255,200,0,0.15); border: 1.5px solid #fc0; color: #fc0;
+  font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer;
+}
+#edit-btn:hover { background: rgba(255,200,0,0.3); }
+#edit-status {
+  background: rgba(0,0,0,0.7); color: #fc0;
+  font-size: 13px; padding: 6px 14px; border-radius: 20px;
+  display: none; white-space: nowrap;
+}
+#copy-btn {
+  background: rgba(0,200,100,0.15); border: 1.5px solid #0c8; color: #0c8;
+  font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  display: none;
+}
+body.edit-mode { cursor: crosshair; }
+body.edit-mode .marker { pointer-events: none; }
+</style>
+</head>
+<body>
+
+<div id="map-wrap">
+  <div id="map-container">
+    <img id="map-img" src="sat_picker_base.png" alt="Casa Tortuga Satellite">
+  </div>
+</div>
+
+<div id="hint">Klick auf einen Bereich für Fotos</div>
+
+<div id="edit-bar" style="display:none">
+  <div id="edit-status"></div>
+  <button id="copy-btn" onclick="copyCoords()">📋 Koordinaten kopieren</button>
+  <button id="edit-btn" onclick="toggleEdit()">✏️ Positionen anpassen</button>
+</div>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modal-header">
+    <div id="modal-title"></div>
+    <button id="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div id="photo-grid"></div>
+  <button id="modal-back" onclick="closeModal()">← Zurück zur Karte</button>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" onclick="event.stopPropagation()">
+</div>
+
+<script>
+const BASE = 'fotos/';
+
+const areas = {
+  'POOL': {
+    label: 'POOL',
+    color: '#1565c0',
+    text: '#fff',
+    title: 'POOL',
+    photos: [
+      'pool/pool_seitlich_sonnenliege.jpg','pool/pool_deck_panorama_meer.jpg','pool/pool_ecke_gartenbereich.jpg',
+      'pool/pool_meerblick_kuesteblick.jpg','pool/pool_treppe_arbeiter.jpg','pool/pool_laengsansicht_abend.jpg',
+      'pool/pool_ecke_deck_felsen.jpg','pool/pool_deck_arbeiter.jpg',
+      'pool/pool_treppe_felslandschaft.jpg',
+      'pool/pool_gesamtanlage_weitwinkel.jpg',
+      'pool/pool_deck_treppe_gesamt.jpg',
+    ]
+  },
+  '1': {
+    label: '1', color: '#2e7d32', text: '#fff',
+    title: 'Area 1 — Pflanzinsel neben Pool',
+    render: 'renders/area1/area1_render_chatgpt_main.png',
+    renderPairs: [
+      { ist: 'renders/area1/area1_foto_ist_beet_pool.jpg', soll: 'renders/area1/area1_render_chatgpt_v2.png' },
+    ],
+    description: 'Keilförmiges Beet zwischen Poolkante und Kalkfels-Hang. Der natürliche Fels bildet die Kulisse — die Bepflanzung soll ihn rahmen, nicht verstecken. Ziel: mediterrane Üppigkeit mit trockenheitsresistenten Arten, die Ziegen meiden und das ganzjährige Erscheinungsbild definieren.',
+    photos: [
+      'area1/area1_beet_felshang_pinien.jpg',
+    ],
+    photosExtra: [
+      'renders/area1/area1_foto_ist_beet_pool.jpg',
+    ],
+    plants: [
+      { name: 'Dracaena draco', common: 'Drachenbaum', wikiDe: 'Kanarischer Drachenbaum', role: 'Solitär · Zentrum', why: 'Skulpturaler Mittelpunkt, prägt die Silhouette gegen den Fels. Wächst langsam, lebt Jahrhunderte.', ziege: 'bedingt', ziegeLabel: '⚠️ Prüfen', img: 'renders/plants/dracaena_draco.jpg' },
+      { name: 'Agapanthus africanus', common: 'Schmucklilie', wikiDe: 'Afrikanische Schmucklilie', role: 'Mittlere Schicht', why: 'Blaue Blütendolden im Sommer, intensiver Kontrast zum beigen Kies und grauen Fels. Robust, trockenheitstolerant.', ziege: 'gefährdet', ziegeLabel: '🐐 Schutz nötig', img: 'renders/plants/agapanthus_africanus.jpg' },
+      { name: 'Westringia fruticosa', common: 'Westringie', wikiDe: 'Westringia', role: 'Randstruktur', why: 'Immergrüner mediterraner Strauch, silbriges Laub, kleine weiße Blüten. Windhart, salzresistent, ziegesicher.', ziege: 'sicher', ziegeLabel: '✅ Sicher', img: 'renders/plants/westringia_fruticosa.jpg' },
+      { name: 'Helichrysum italicum', common: 'Currykraut', wikiDe: 'Italienische Strohblume', role: 'Silber-Bodendecker', why: 'Silber-graue Hügel, intensiver Duft. Füllt Lücken zwischen Steinen, betont den mediterranen Charakter.', ziege: 'sicher', ziegeLabel: '✅ Sicher', img: 'renders/plants/helichrysum_italicum.jpg' },
+      { name: 'Nassella tenuissima', common: 'Federhalm-Gras', wikiDe: 'Mexikanisches Federgras', role: 'Bodenebene', why: 'Goldenes Wogen im Wind, weicher Kontrast zu hartem Fels. Selbstaussäend, wartungsarm.', ziege: 'sicher', ziegeLabel: '✅ Sicher', img: 'renders/plants/nassella_tenuissima.jpg' },
+      { name: 'Juniperus horizontalis', common: 'Teppich-Wacholder', wikiDe: 'Kriech-Wacholder', role: 'Bodendecker', why: 'Kriecht über Kies und Felsränder, verhindert Erosion, immergrün, null Pflege.', ziege: 'sicher', ziegeLabel: '✅ Sicher', img: 'renders/plants/juniperus_horizontalis.jpg' },
+    ],
+    moodHero: 'renders/area1/area1_render_mood_hero.jpg',
+    moods: [
+      'renders/area1/area1_mood_portals_1.jpg',
+      'renders/area1/area1_mood_portals_2.jpg',
+      'renders/area1/area1_render_midjourney.png',
+      'renders/area1/area1_pflanze_agapanthus.png',
+    ],
+    downloads: [
+      { label: 'Pflanzenliste Baumschule', file: '../Pflanzenliste_Baumschule_v4.pdf', icon: '🌿' },
+      { label: 'Ziegenanalyse', file: '../Ziegenanalyse.pdf', icon: '🐐' },
+      { label: 'Pflanzinseln Konzept', file: '../Pflanzinseln_PortalsNous.pdf', icon: '📐' },
+
+    ]
+  },
+  '2': {
+    label: '2', color: '#2e7d32', text: '#fff',
+    title: 'Area 2 — Treppe hoch zum Pool',
+    renders: [
+      'renders/area2/area2_render_chatgpt_terrasse.png',
+      'renders/area2/area2_render_chatgpt_meerblick.png',
+      'renders/area2/area2_schatten_masked.png',
+    ],
+    istPhotos: [
+      'area2/area2_terrasse_dach_bergblick.jpg',
+      'area2/area2_terrasse_kuebler_meerblick.jpg',
+      'area2/area2_terrasse_fels_markise.jpg',
+    ],
+    description: 'Treppenaufgang zum Pool — Bepflanzung entlang der Stufen und Randbereiche.',
+    photos: [
+      'area2/area2_terrasse_dach_bergblick.jpg',
+      'area2/area2_terrasse_fels_markise.jpg',
+      'area2/area2_terrasse_kuebler_meerblick.jpg',
+      'area2/area2_terrasse_dach_kuesteblick.jpg',
+      'area2/area2_terrasse_fels_bergblick.jpg',
+      'area2/area2_terrasse_kuebler_hausdach.jpg',
+      'area2/area2_fels_beet_steinweg.jpg',
+      'area2/area2_haus_markise_pinien_oben.jpg',
+      'area2/area2_treppe_beet_meerblick.jpg',
+      'area2/area2_terrasse_kuebler_bergblick.jpg',
+      'area2/area2_sonnenschirm_fels_kuebler.jpg',
+      'area2/area2_sonnenschirm_terrasse_haus.jpg',
+    ],
+    plants: [
+      { name: 'Nerium oleander', common: 'Oleander', role: 'Hauptbepflanzung · Reihe', why: 'Mediterrane Klassikpflanze, blüht üppig in Weiß/Rosa/Rot. Alle Pflanzenteile giftig — Ziegen meiden ihn konsequent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/nerium_oleander.jpg' },
+      { name: 'Phormium tenax', common: 'Neuseeländischer Flachs', role: 'Strukturpflanze · Bodendecker', why: 'Strapazierfähige Fächerpflanze mit lederartigen Blättern. Scharfe Blattränder und harte Textur — Ziegen lassen es in Ruhe.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/phormium_tenax.jpg' },
+      { name: 'Cordyline australis', common: 'Keulenlilie', wikiUrl: 'https://en.wikipedia.org/wiki/Cordyline_australis', role: 'Solitär · Höhe ⭐ Favorit', why: 'Tropisch wirkende Palmenform, sehr robust. Scharfe Blattspitzen deterrieren Ziegen — Robins Favorit für Area 2.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/cordyline_australis.jpg' },
+    ],
+    downloads: [
+      { label: 'Gefäße — Allgemeine Analyse', file: '../Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
+      { label: 'Atelier Vierkant — Gefäße & Formsprache', file: '../Design_Analyse_ATV.pdf', icon: '🏺' },
+      { label: 'Design Analyse Domani', file: '../Design_Analyse_Domani.pdf', icon: '📋' },
+      { label: 'Design Analyse Foronda', file: '../Design_Analyse_Foronda.pdf', icon: '📋' },
+    ]
+  },
+  '3': {
+    label: '3', color: '#2e7d32', text: '#fff',
+    title: 'Area 3 — Treppe runter · Pool-Technik · Bepflanzung',
+    renderPairs: [
+      { ist: 'fotos/area3/area3_treppenabgang_beet_oben.jpg', soll: 'renders/area3/area3_treppenabgang_beet_oben_steinweg.png', label: 'Treppenabgang — Beet → Steinweg' },
+      { ist: 'fotos/area3/area3_poolterrasse_felsen_antennen.jpg', soll: 'renders/area3/area3_poolterrasse_steinweg_render_v1.png', label: 'Poolterrasse — Beet → Steinweg' },
+      { ist: 'fotos/area3/area3_beet_laterne_vogelperspektive.jpg', soll: 'renders/area3/area3_beet_laterne_vogelperspektive_steinweg.png', label: 'Vogelperspektive — Beet → Steinweg' },
+      { ist: 'fotos/area3/area3_frau_terrasse_beet_darunter.jpg', soll: 'renders/area3/area3_frau_terrasse_beet_darunter_steinweg.png', label: 'Terrasse — Beet → Steinweg' },
+      { ist: 'fotos/area3/area3_treppe_fensterlaeden_steinmauer.jpg', soll: 'renders/area3/area3_treppe_fensterlaeden_steinmauer_steinweg.png', label: 'Treppe Fensterläden — Beet → Steinweg' },
+    ],
+    photos: [
+      'area3/area3_terrasse_schirm_fensterlaeden.jpg',
+      'area3/area3_beet_beton_felsen_weg.jpg',
+      'area3/area3_laterne_lamellentuer.jpg',
+      'area3/area3_steinweg_laterne_schirm.jpg',
+      'area3/area3_treppe_fensterlaeden_steinmauer.jpg',
+      'area3/area3_frau_schirm_felsterrasse.jpg',
+      'area3/area3_beet_laterne_vogelperspektive.jpg',
+      'area3/area3_treppenabgang_beet_oben.jpg',
+      'area3/area3_beet_felsen_daemmerung.jpg',
+      'area3/area3_felslandschaft_steinmauer_abend.jpg',
+    ]
+  },
+  '4': {
+    label: '4', color: '#2e7d32', text: '#fff',
+    title: 'Area 4 — Aussichtsplattform · Privatbereich',
+    render: 'renders/area4/area4_render_v1.jpg',
+    photos: [
+      'area4/area4_steinterrasse_liege_meerblick.jpg',
+    ]
+  },
+  '5': {
+    label: '5', color: '#2e7d32', text: '#fff',
+    title: 'Area 5 — Zaun zum Nachbarn',
+    render: 'renders/area5/area5_render_v1.jpg',
+    photos: [
+      'area5/area5_steinhaus_brennholz_daemmerung.jpg',
+      'area5/area5_steinhaus_meerblick_sonnenuntergang.jpg',
+    ],
+    plants: [
+      { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Skulpturpflanze mit starker Silhouette und scharfen Dornen. Ziegenresistent, sehr trockenresistent — ideal als Grenzmarkierung entlang des Zauns.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
+      { name: 'Pittosporum tobira', common: 'Japanischer Klebsame', wikiDe: 'Chinesischer Klebsame', role: 'Sichtschutz · Hecke', why: 'Immergrüner, dichter Strauch — ideal als Sichtschutz am Zaun. Aromatisches Laub, ziegensicher, kalkbodenresistent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/pittosporum_tobira.jpg' },
+      { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Aufrechter Wuchs, blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
+    ],
+    downloads: [
+      { label: 'Pittosporum tobira — Analyse Mallorca', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
+      { label: 'Euphorbia characias — Analyse Mallorca', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
+    ],
+  },
+  '6': {
+    label: '6', color: '#2e7d32', text: '#fff',
+    title: 'Area 6 — Berg · Funkmast',
+    render: 'renders/area6/area6_render_v1.jpg',
+    photos: [
+      'area6/area6_vertrockneter_baum_felswand.jpg',
+      'area6/area6_vertrockneter_baum_nahaufnahme.jpg',
+      'area6/area6_felsiger_hang_antennenmast.jpg',
+      'area6/area6_hang_antennenmast_holzdeck.jpg',
+      'area6/area6_mann_blickt_felsenhang_1.jpg',
+      'area6/area6_mann_blickt_felsenhang_2.jpg',
+      'area6/area6_mann_felsen_antennen_unten_1.jpg',
+      'area6/area6_mann_felsen_antennen_unten_2.jpg',
+    ],
+    plants: [
+      { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Robuste Skulpturpflanze, braucht kaum Pflege. Passt zum wilden Bergcharakter dieser Zone — markante Silhouette gegen den Funkmast-Hintergrund.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
+      { name: 'Pittosporum tobira', common: 'Japanischer Klebsame', wikiDe: 'Chinesischer Klebsame', role: 'Strukturpflanze · Felshang', why: 'Tiefgehende Bewurzelung in Felsspalten, windresistent, kalkbodenresistent. Ideal für den exponierten Bergbereich.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/pittosporum_tobira.jpg' },
+      { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent. Verträgt Fels und Trockenheit bestens.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
+    ],
+    downloads: [
+      { label: 'Pittosporum tobira — Analyse Mallorca', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
+      { label: 'Euphorbia characias — Analyse Mallorca', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
+    ],
+  },
+  '7': {
+    label: '7', color: '#2e7d32', text: '#fff',
+    title: 'Area 7 — Garagendach · Parkplatz',
+    render: 'renders/area7/area7_render_v1.jpg',
+    photos: [
+      'area7/streetview_garage.jpg',
+    ],
+    plants: [
+      { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Pflegeleichter Akzent für strukturarme Flächen. Ziegenresistent, kein Bewässerungsbedarf — ideal für Garagendach und Parkbereich.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
+    ],
+  },
+};
+
+// Koordinaten auf sat_picker_base.png (2074×1464px) — Robin-geklickt
+const positions = {
+  'POOL': { x: 1087/2074, y: 516/1464 },
+  '1':    { x: 1185/2074, y: 454/1464 },
+  '2':    { x: 1100/2074, y: 616/1464 },
+  '3':    { x: 1052/2074, y: 669/1464 },
+  '4':    { x:  912/2074, y: 535/1464 },
+  '5':    { x:  937/2074, y:1085/1464 },
+  '6':    { x: 1257/2074, y: 671/1464 },
+  '7':    { x:  609/2074, y: 937/1464 },
+};
+
+function buildMarkers() {
+  const container = document.getElementById('map-container');
+  const img = document.getElementById('map-img');
+
+  function place() {
+    container.querySelectorAll('.marker').forEach(m => m.remove());
+    const W = img.offsetWidth, H = img.offsetHeight;
+
+    for (const [key, pos] of Object.entries(positions)) {
+      const area = areas[key];
+      const x = pos.x * W;
+      const y = pos.y * H;
+      const isPool = key === 'POOL';
+      const r = isPool ? 24 : 20;
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('width', r*2+6);
+      svg.setAttribute('height', r*2+6);
+      svg.style.overflow = 'visible';
+
+      // outer glow ring
+      const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      glow.setAttribute('cx', r+3); glow.setAttribute('cy', r+3);
+      glow.setAttribute('r', r+4);
+      glow.setAttribute('fill', 'none');
+      glow.setAttribute('stroke', area.color);
+      glow.setAttribute('stroke-width', '2');
+      glow.setAttribute('opacity', '0.4');
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx', r+3); circle.setAttribute('cy', r+3);
+      circle.setAttribute('r', r);
+      circle.setAttribute('fill', area.color);
+      circle.setAttribute('stroke', '#fff');
+      circle.setAttribute('stroke-width', isPool ? '2.5' : '2');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+      text.setAttribute('x', r+3); text.setAttribute('y', r+3);
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('dominant-baseline','central');
+      text.setAttribute('fill', '#fff');
+      text.setAttribute('font-size', isPool ? '11' : '13');
+      text.setAttribute('font-weight','bold');
+      text.setAttribute('font-family','Helvetica Neue, sans-serif');
+      text.textContent = area.label;
+
+      svg.appendChild(glow);
+      svg.appendChild(circle);
+      svg.appendChild(text);
+
+      const marker = document.createElement('div');
+      marker.className = 'marker';
+      marker.style.left = x + 'px';
+      marker.style.top = y + 'px';
+      marker.appendChild(svg);
+      marker.onclick = () => openModal(key);
+      container.appendChild(marker);
+    }
+  }
+
+  if (img.complete && img.naturalWidth > 0) place();
+  else img.onload = place;
+  window.addEventListener('resize', place);
+}
+
+function photoSrc(p) {
+  return BASE + p;
+}
+
+function openModal(key) {
+  const area = areas[key];
+  document.getElementById('modal-title').textContent = area.title || area.label;
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = '';
+
+  // ── Rich layout (description + plants) ──────────────────────────────
+  if (area.plants !== undefined || area.description) {
+
+    // 1. Description
+    if (area.description) {
+      const desc = document.createElement('div');
+      desc.className = 'area-description';
+      desc.textContent = area.description;
+      grid.appendChild(desc);
+    }
+
+    // 2. Mood Banner
+    if (area.moods && area.moods.length > 0) {
+      const moodWrap = document.createElement('div');
+      moodWrap.className = 'mood-banner';
+      const moodLabel = document.createElement('div');
+      moodLabel.className = 'mood-label';
+      moodLabel.textContent = '✦ Stimmung & Referenz';
+      const layout = document.createElement('div');
+      layout.className = 'mood-layout';
+
+      if (area.moodHero) {
+        const heroWrap = document.createElement('div');
+        heroWrap.className = 'mood-hero-wrap';
+        const hero = document.createElement('img');
+        hero.src = area.moodHero;
+        hero.className = 'mood-hero';
+        hero.alt = 'Mood Hero';
+        hero.loading = 'lazy';
+        hero.onclick = (e) => { e.stopPropagation(); openLightbox(hero.src); };
+        heroWrap.appendChild(hero);
+        layout.appendChild(heroWrap);
+      }
+
+      if (area.moods && area.moods.length > 0) {
+        const strip = document.createElement('div');
+        strip.className = 'mood-strip';
+        area.moods.forEach(m => {
+          const img = document.createElement('img');
+          img.src = m;
+          img.loading = 'lazy';
+          img.alt = 'Mood';
+          img.onclick = (e) => { e.stopPropagation(); openLightbox(img.src); };
+          strip.appendChild(img);
+        });
+        layout.appendChild(strip);
+      }
+
+      moodWrap.appendChild(moodLabel);
+      moodWrap.appendChild(layout);
+      grid.appendChild(moodWrap);
+    }
+
+    // 3. IST / SOLL
+    const istSoll = document.createElement('div');
+    istSoll.className = 'ist-soll-wrap';
+
+    // IST
+    const istWrap = document.createElement('div');
+    const istLabel = document.createElement('div');
+    istLabel.className = 'ist-soll-label ist';
+    istLabel.textContent = '📷 IST — Aktuell';
+    istWrap.appendChild(istLabel);
+    const istList = area.istPhotos || [area.photos[0]];
+    istList.forEach(p => {
+      const istImg = document.createElement('img');
+      istImg.src = photoSrc(p);
+      istImg.className = 'ist-soll-img ist';
+      if (istList.length > 1) istImg.style.marginBottom = '8px';
+      istImg.onclick = (e) => { e.stopPropagation(); openLightbox(istImg.src); };
+      istWrap.appendChild(istImg);
+    });
+
+    // SOLL
+    const sollWrap = document.createElement('div');
+    const sollLabel = document.createElement('div');
+    sollLabel.className = 'ist-soll-label soll';
+    sollLabel.textContent = '✨ SOLL — KI-Visualisierung';
+
+    const renderList = area.renders || (area.render ? [area.render] : []);
+    if (renderList.length > 0) {
+      sollWrap.appendChild(sollLabel);
+      renderList.forEach((src, idx) => {
+        const sollImg = document.createElement('img');
+        sollImg.src = src;
+        sollImg.className = 'ist-soll-img soll';
+        if (renderList.length > 1) sollImg.style.marginBottom = '8px';
+        sollImg.onclick = (e) => { e.stopPropagation(); openLightbox(sollImg.src); };
+        sollWrap.appendChild(sollImg);
+      });
+    } else {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'soll-placeholder';
+      placeholder.innerHTML = '<span>🎨</span><strong>Render ausstehend</strong><p>KI-Visualisierung wird<br>noch erstellt</p>';
+      sollWrap.appendChild(sollLabel);
+      sollWrap.appendChild(placeholder);
+    }
+
+    istSoll.appendChild(istWrap);
+    istSoll.appendChild(sollWrap);
+    grid.appendChild(istSoll);
+
+    // Extra IST/SOLL Paare
+    if (area.renderPairs) {
+      area.renderPairs.forEach(pair => {
+        const pairWrap = document.createElement('div');
+        pairWrap.className = 'ist-soll-wrap';
+
+        const pIstWrap = document.createElement('div');
+        const pIstLabel = document.createElement('div');
+        pIstLabel.className = 'ist-soll-label ist';
+        pIstLabel.textContent = '📷 IST — Aktuell';
+        const pIstImg = document.createElement('img');
+        pIstImg.src = pair.ist;
+        pIstImg.className = 'ist-soll-img ist';
+        pIstImg.loading = 'lazy';
+        pIstImg.onclick = (e) => { e.stopPropagation(); openLightbox(pIstImg.src); };
+        pIstWrap.appendChild(pIstLabel);
+        pIstWrap.appendChild(pIstImg);
+
+        const pSollWrap = document.createElement('div');
+        const pSollLabel = document.createElement('div');
+        pSollLabel.className = 'ist-soll-label soll';
+        pSollLabel.textContent = '✨ SOLL — KI-Visualisierung';
+        const pSollImg = document.createElement('img');
+        pSollImg.src = pair.soll;
+        pSollImg.className = 'ist-soll-img soll';
+        pSollImg.loading = 'lazy';
+        pSollImg.onclick = (e) => { e.stopPropagation(); openLightbox(pSollImg.src); };
+        pSollWrap.appendChild(pSollLabel);
+        pSollWrap.appendChild(pSollImg);
+
+        pairWrap.appendChild(pIstWrap);
+        pairWrap.appendChild(pSollWrap);
+        grid.appendChild(pairWrap);
+      });
+    }
+
+    // 4. Alle IST-Fotos
+    const fotoDivider = document.createElement('div');
+    fotoDivider.className = 'section-divider';
+    fotoDivider.textContent = 'Alle Fotos — IST-Zustand';
+    grid.appendChild(fotoDivider);
+
+    const thumbGrid = document.createElement('div');
+    thumbGrid.className = 'foto-thumb-grid';
+    area.photos.forEach(p => {
+      const img = document.createElement('img');
+      img.src = photoSrc(p);
+      img.loading = 'lazy';
+      img.onclick = (e) => { e.stopPropagation(); openLightbox(img.src); };
+      thumbGrid.appendChild(img);
+    });
+    if (area.photosExtra) {
+      area.photosExtra.forEach(p => {
+        const img = document.createElement('img');
+        img.src = p;
+        img.loading = 'lazy';
+        img.onclick = (e) => { e.stopPropagation(); openLightbox(img.src); };
+        thumbGrid.appendChild(img);
+      });
+    }
+    grid.appendChild(thumbGrid);
+
+    // 5. Pflanzenliste
+    if (!area.plants || area.plants.length === 0) {
+      // keine Pflanzen definiert — Sektion weglassen
+    } else {
+    const plantDivider = document.createElement('div');
+    plantDivider.className = 'section-divider';
+    plantDivider.textContent = 'Pflanzkonzept';
+    grid.appendChild(plantDivider);
+
+    const plantGrid = document.createElement('div');
+    plantGrid.className = 'plant-grid';
+    area.plants.forEach(pl => {
+      const card = document.createElement('div');
+      card.className = 'plant-card';
+      card.innerHTML = `
+        ${pl.img ? `<img class="plant-card-img" src="${pl.img}" alt="${pl.name}" loading="lazy" onerror="this.style.display='none'">` : ''}
+        <div class="plant-card-body">
+          <div class="plant-card-top">
+            <div>
+              <div class="plant-name">${pl.name}</div>
+              <div class="plant-common">${pl.common}</div>
+            </div>
+            <div class="plant-role">${pl.role}</div>
+          </div>
+          <div class="plant-why">${pl.why}</div>
+          <div class="plant-ziege ${pl.ziege}">${pl.ziegeLabel}</div>
+          ${pl.wiki !== false ? `<a class="plant-wiki-link" href="${pl.wikiUrl || ('https://' + (pl.wikiDe ? 'de' : 'en') + '.wikipedia.org/wiki/' + encodeURIComponent((pl.wikiDe || pl.name).replace(/ /g,'_')))}" target="_blank" rel="noopener">📖 Wikipedia</a>` : ''}
+        </div>
+      `;
+      plantGrid.appendChild(card);
+    });
+    grid.appendChild(plantGrid);
+    } // end plants check
+
+    // 6. Downloads
+    if (area.downloads && area.downloads.length > 0) {
+      const dlDivider = document.createElement('div');
+      dlDivider.className = 'section-divider';
+      dlDivider.textContent = 'Downloads';
+      grid.appendChild(dlDivider);
+
+      const dlGrid = document.createElement('div');
+      dlGrid.className = 'download-grid';
+      area.downloads.forEach(dl => {
+        const a = document.createElement('a');
+        a.className = 'download-btn';
+        a.href = dl.file;
+        a.target = '_blank';
+        a.download = '';
+        a.innerHTML = `
+          <span class="dl-icon">${dl.icon}</span>
+          <div class="dl-label">
+            ${dl.label}
+            <span>PDF herunterladen</span>
+          </div>
+        `;
+        dlGrid.appendChild(a);
+      });
+      grid.appendChild(dlGrid);
+    }
+
+  // ── Standard layout (render only) ───────────────────────────────────
+  } else if (area.render || area.renderPairs) {
+    const sideBySide = document.createElement('div');
+    sideBySide.style.cssText = 'grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;';
+    const istWrap = document.createElement('div');
+    const istLabel = document.createElement('div');
+    istLabel.style.cssText = 'color:#aaa;font-size:11px;font-weight:bold;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;';
+    istLabel.textContent = '📷 IST — Aktuell';
+    const istImg = document.createElement('img');
+    istImg.src = photoSrc(area.photos[0]);
+    istImg.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:2px solid #444;cursor:pointer;';
+    istImg.onclick = (e) => { e.stopPropagation(); openLightbox(istImg.src); };
+    istWrap.appendChild(istLabel); istWrap.appendChild(istImg);
+    const sollWrap = document.createElement('div');
+    const sollLabel = document.createElement('div');
+    sollLabel.style.cssText = 'color:#fc0;font-size:11px;font-weight:bold;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;';
+    sollLabel.textContent = '✨ SOLL — KI-Visualisierung';
+    const sollImg = document.createElement('img');
+    sollImg.src = area.render;
+    sollImg.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:2px solid #fc0;cursor:pointer;';
+    sollImg.onclick = (e) => { e.stopPropagation(); openLightbox(sollImg.src); };
+    sollWrap.appendChild(sollLabel); sollWrap.appendChild(sollImg);
+    if (area.render) {
+      sideBySide.appendChild(istWrap); sideBySide.appendChild(sollWrap);
+      grid.appendChild(sideBySide);
+    }
+
+    // renderPairs im Standard-Layout
+    if (area.renderPairs) {
+      area.renderPairs.forEach(pair => {
+        const pairWrap = document.createElement('div');
+        pairWrap.style.cssText = 'grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;';
+        const pIstWrap = document.createElement('div');
+        const pIstLabel = document.createElement('div');
+        pIstLabel.style.cssText = 'color:#aaa;font-size:11px;font-weight:bold;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;';
+        pIstLabel.textContent = '📷 IST — ' + (pair.label || 'Aktuell');
+        const pIstImg = document.createElement('img');
+        pIstImg.src = pair.ist;
+        pIstImg.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:2px solid #444;cursor:pointer;';
+        pIstImg.onclick = (e) => { e.stopPropagation(); openLightbox(pIstImg.src); };
+        pIstWrap.appendChild(pIstLabel); pIstWrap.appendChild(pIstImg);
+        const pSollWrap = document.createElement('div');
+        const pSollLabel = document.createElement('div');
+        pSollLabel.style.cssText = 'color:#fc0;font-size:11px;font-weight:bold;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;';
+        pSollLabel.textContent = '✨ SOLL — KI-Visualisierung';
+        const pSollImg = document.createElement('img');
+        pSollImg.src = pair.soll;
+        pSollImg.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:2px solid #fc0;cursor:pointer;';
+        pSollImg.onclick = (e) => { e.stopPropagation(); openLightbox(pSollImg.src); };
+        pSollWrap.appendChild(pSollLabel); pSollWrap.appendChild(pSollImg);
+        pairWrap.appendChild(pIstWrap); pairWrap.appendChild(pSollWrap);
+        grid.appendChild(pairWrap);
+      });
+    }
+
+    const divider = document.createElement('div');
+    divider.style.cssText = 'grid-column:1/-1;color:#555;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;border-top:1px solid #333;padding-top:12px;';
+    divider.textContent = 'Alle Fotos';
+    grid.appendChild(divider);
+    area.photos.forEach(p => {
+      const img = document.createElement('img');
+      img.src = photoSrc(p);
+      img.loading = 'lazy';
+      img.onclick = (e) => { e.stopPropagation(); openLightbox(img.src); };
+      grid.appendChild(img);
+    });
+
+  // ── Simple photo grid ───────────────────────────────────────────────
+  } else if (!area.photos || area.photos.length === 0) {
+    grid.innerHTML = '<p style="color:#aaa;padding:20px">Keine Fotos vorhanden.</p>';
+  } else {
+    area.photos.forEach(p => {
+      const img = document.createElement('img');
+      img.src = photoSrc(p);
+      img.loading = 'lazy';
+      img.onclick = (e) => { e.stopPropagation(); openLightbox(img.src); };
+      grid.appendChild(img);
+    });
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeLightbox(); stopEdit(); }
+});
+
+// ---- EDIT MODE ----
+const editOrder = ['POOL','1','2','3','4','5','6','7'];
+let editMode = false;
+let editQueue = [];
+
+function toggleEdit() {
+  if (editMode) { stopEdit(); return; }
+  editMode = true;
+  editQueue = [...editOrder];
+  document.body.classList.add('edit-mode');
+  document.getElementById('edit-btn').textContent = '✕ Abbrechen';
+  document.getElementById('copy-btn').style.display = 'none';
+  nextEditStep();
+  document.getElementById('map-container').addEventListener('click', onEditClick);
+}
+
+function nextEditStep() {
+  if (editQueue.length === 0) {
+    document.getElementById('edit-status').style.display = 'block';
+    document.getElementById('edit-status').textContent = '✅ Fertig! Koordinaten kopieren →';
+    document.getElementById('copy-btn').style.display = 'block';
+    document.getElementById('edit-btn').textContent = '✏️ Nochmal';
+    document.body.classList.remove('edit-mode');
+    document.getElementById('map-container').removeEventListener('click', onEditClick);
+    editMode = false;
+    buildMarkers();
+    return;
+  }
+  const next = editQueue[0];
+  const area = areas[next];
+  document.getElementById('edit-status').style.display = 'block';
+  document.getElementById('edit-status').textContent = `👆 Klick auf: ${area.title || area.label}`;
+}
+
+function onEditClick(e) {
+  const img = document.getElementById('map-img');
+  const rect = img.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const W = img.offsetWidth, H = img.offsetHeight;
+
+  const key = editQueue.shift();
+  positions[key] = { x: x/W, y: y/H };
+  buildMarkers();
+  nextEditStep();
+}
+
+function stopEdit() {
+  editMode = false;
+  editQueue = [];
+  document.body.classList.remove('edit-mode');
+  document.getElementById('edit-btn').textContent = '✏️ Positionen anpassen';
+  document.getElementById('edit-status').style.display = 'none';
+  document.getElementById('map-container').removeEventListener('click', onEditClick);
+}
+
+function copyCoords() {
+  const img = document.getElementById('map-img');
+  const W = img.naturalWidth || 2074;
+  const H = img.naturalHeight || 1464;
+  const out = {};
+  for (const [k,v] of Object.entries(positions)) {
+    out[k] = [Math.round(v.x*W), Math.round(v.y*H)];
+  }
+  const txt = JSON.stringify(out, null, 2);
+  navigator.clipboard.writeText(txt).then(() => {
+    document.getElementById('copy-btn').textContent = '✅ Kopiert!';
+    setTimeout(() => document.getElementById('copy-btn').textContent = '📋 Koordinaten kopieren', 2000);
+  });
+}
+
+buildMarkers();
+</script>
+</body>
+</html>
