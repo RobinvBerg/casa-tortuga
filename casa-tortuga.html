@@ -837,7 +837,7 @@ body.edit-mode .marker { pointer-events: none; }
     <div class="skizze-hot" style="left:28%;top:75%;" onclick="openAreaFromSkizze(6)"></div>
   </div>
   <p style="margin-top:20px; color:#888; font-size:13px; letter-spacing:0.08em; text-align:center;">Tippen Sie auf eine Nummer um Ihren Bereich zu entdecken</p>
-  <button class="enter-btn" onclick="document.getElementById('opener').style.display='none'; document.getElementById('map-section').style.display='block'; buildMarkers(); buildPanel();">Alle Bereiche erkunden →</button>
+  <button class="enter-btn" onclick="document.getElementById('opener').style.display='none'; document.getElementById('map-section').style.display='block'; buildMarkers(); buildHouseMarker(); buildPanel();">Alle Bereiche erkunden →</button>
 </section>
 
 <section id="map-section">
@@ -1092,7 +1092,7 @@ const positions = {
 function openAreaFromSkizze(idx) {
   document.getElementById('opener').style.display = 'none';
   document.getElementById('map-section').style.display = 'block';
-  buildMarkers(); buildPanel();
+  buildMarkers(); buildHouseMarker(); buildPanel();
   const key = idx === -1 ? 'POOL' : String(idx + 1);
   setTimeout(() => openModal(key), 300);
 }
