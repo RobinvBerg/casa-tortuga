@@ -1066,17 +1066,20 @@ const areas = {
     description: 'Garagendach und Zufahrtsbereich — die erste Begegnung mit dem Anwesen. Ein gepflegter, strukturierter Eindruck hier setzt den Ton für alles Weitere. Robuste Akzentpflanzen schaffen Charakter ohne Pflegeaufwand.',
     title: 'Area 7 — Garagendach · Parkplatz',
     render: 'renders/area7/area7_render_soll.jpg',
+    istSollFirst: true,
     photos: [
       'area7/area7_ist_flachdach.jpg',
       'area7/streetview_garage.jpg',
-      'area7/sukkulenten_beet_freigestellt.png',
-      'area7/sukkulenten_beet_nahaufnahme_freigestellt.png',
-      'area7/sukkulenten_beet_aeonium_freigestellt.png',
-      'area7/sukkulenten_beet_4_freigestellt.png',
-      'area7/yucca_agave_topf_terrakotta_braun_freigestellt.png',
-      'area7/aloe_topf_terrakotta_orange_freigestellt.png',
-      'area7/aloe_arborescens_topf_terrakotta_rotbraun_freigestellt.png',
-      'area7/crassula_topf_terrakotta_rotbraun_freigestellt.png',
+    ],
+    moods: [
+      'fotos/area7/sukkulenten_beet_freigestellt.png',
+      'fotos/area7/sukkulenten_beet_nahaufnahme_freigestellt.png',
+      'fotos/area7/sukkulenten_beet_aeonium_freigestellt.png',
+      'fotos/area7/sukkulenten_beet_4_freigestellt.png',
+      'fotos/area7/yucca_agave_topf_terrakotta_braun_freigestellt.png',
+      'fotos/area7/aloe_topf_terrakotta_orange_freigestellt.png',
+      'fotos/area7/aloe_arborescens_topf_terrakotta_rotbraun_freigestellt.png',
+      'fotos/area7/crassula_topf_terrakotta_rotbraun_freigestellt.png',
     ],
     plants: [
       { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Pflegeleichter Akzent für strukturarme Flächen. Ziegenresistent, kein Bewässerungsbedarf — ideal für Garagendach und Parkbereich.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
@@ -1202,6 +1205,52 @@ function buildMarkers() {
   window.addEventListener('resize', place);
 }
 
+function buildIstSoll(area) {
+  const istSoll = document.createElement('div');
+  istSoll.className = 'ist-soll-wrap';
+
+  const istWrap = document.createElement('div');
+  const istLabel = document.createElement('div');
+  istLabel.className = 'ist-soll-label ist';
+  istLabel.textContent = '📷 IST — Aktuell';
+  istWrap.appendChild(istLabel);
+  const istList = area.istPhotos || [area.photos[0]];
+  istList.forEach(p => {
+    const istImg = document.createElement('img');
+    istImg.src = photoSrc(p);
+    istImg.className = 'ist-soll-img ist';
+    if (istList.length > 1) istImg.style.marginBottom = '8px';
+    istImg.onclick = (e) => { e.stopPropagation(); openLightbox(istImg.src); };
+    istWrap.appendChild(istImg);
+  });
+
+  const sollWrap = document.createElement('div');
+  const sollLabel = document.createElement('div');
+  sollLabel.className = 'ist-soll-label soll';
+  sollLabel.textContent = '✨ SOLL — KI-Visualisierung';
+  const renderList = area.renders || (area.render ? [area.render] : []);
+  if (renderList.length > 0) {
+    sollWrap.appendChild(sollLabel);
+    renderList.forEach(src => {
+      const sollImg = document.createElement('img');
+      sollImg.src = src;
+      sollImg.className = 'ist-soll-img soll';
+      sollImg.onclick = (e) => { e.stopPropagation(); openLightbox(sollImg.src); };
+      sollWrap.appendChild(sollImg);
+    });
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'soll-placeholder';
+    placeholder.innerHTML = '<span>🎨</span><strong>Render ausstehend</strong><p>KI-Visualisierung wird<br>noch erstellt</p>';
+    sollWrap.appendChild(sollLabel);
+    sollWrap.appendChild(placeholder);
+  }
+
+  istSoll.appendChild(istWrap);
+  istSoll.appendChild(sollWrap);
+  return istSoll;
+}
+
 function photoSrc(p) {
   return BASE + p;
 }
@@ -1223,7 +1272,13 @@ function openModal(key) {
       grid.appendChild(desc);
     }
 
-    // 2. Mood Banner
+    // 2. IST/SOLL first (optional flag)
+    if (area.istSollFirst) {
+      const isWrap2 = buildIstSoll(area);
+      grid.appendChild(isWrap2);
+    }
+
+    // 3. Mood Banner
     if (area.moods && area.moods.length > 0) {
       const moodWrap = document.createElement('div');
       moodWrap.className = 'mood-banner';
@@ -1265,7 +1320,8 @@ function openModal(key) {
       grid.appendChild(moodWrap);
     }
 
-    // 3. IST / SOLL
+    // 4. IST / SOLL
+    if (!area.istSollFirst) {
     const istSoll = document.createElement('div');
     istSoll.className = 'ist-soll-wrap';
 
@@ -1313,6 +1369,7 @@ function openModal(key) {
     istSoll.appendChild(istWrap);
     istSoll.appendChild(sollWrap);
     grid.appendChild(istSoll);
+    } // end !istSollFirst
 
     // Extra IST/SOLL Paare
     if (area.renderPairs) {
