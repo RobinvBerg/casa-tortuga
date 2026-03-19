@@ -859,6 +859,7 @@ body.edit-mode .marker { pointer-events: none; }
 <div id="toolbar">
   <button class="tb-btn" onclick="openPDFModal()">📄 Alle PDFs</button>
   <button class="tb-btn" onclick="openPflanzenModal()">🌿 Alle Pflanzen</button>
+  <a class="tb-btn" href="Casa_Tortuga_Pflanzenliste.xlsx" download style="text-decoration:none;">📊 Budget</a>
 </div>
 
 
@@ -971,6 +972,53 @@ const areas = {
       { name: 'Phormium tenax', common: 'Neuseeländischer Flachs', role: 'Strukturpflanze · Bodendecker', why: 'Strapazierfähige Fächerpflanze mit lederartigen Blättern. Scharfe Blattränder und harte Textur — Ziegen lassen es in Ruhe.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/phormium_tenax.jpg' },
       { name: 'Cordyline australis', common: 'Keulenlilie', wikiUrl: 'https://en.wikipedia.org/wiki/Cordyline_australis', role: 'Solitär · Höhe ⭐ Favorit', why: 'Tropisch wirkende Palmenform, sehr robust. Scharfe Blattspitzen deterrieren Ziegen — Robins Favorit für Area 2.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/cordyline_australis.jpg' },
     ],
+    topfGallery: [
+      'freigestellt/agave_phormium_topf_keramik_schwarz_freigestellt.png',
+      'freigestellt/agave_phormium_topf_keramik_schwarzbraun_freigestellt.png',
+      'freigestellt/agave_phormium_topf_kunststoff_schwarz_2_freigestellt.png',
+      'freigestellt/aloe_arborescens_topf_terrakotta_rotbraun_freigestellt.png',
+      'freigestellt/aloe_baum_topf_kunststoff_schwarz_freigestellt.png',
+      'freigestellt/aloe_topf_terrakotta_orange_freigestellt.png',
+      'freigestellt/crassula_topf_terrakotta_rotbraun_freigestellt.png',
+      'freigestellt/cycas_topf_beton_grau_2_freigestellt.png',
+      'freigestellt/cycas_topf_keramik_blau_freigestellt.png',
+      'freigestellt/cycas_topf_metall_grau_freigestellt.png',
+      'freigestellt/dracaena_cycas_topf_keramik_schwarz_2_freigestellt.png',
+      'freigestellt/dracaena_draco_topf_kunststoff_schwarz_2_freigestellt.png',
+      'freigestellt/dracaena_draco_topf_kunststoff_schwarz_3_freigestellt.png',
+      'freigestellt/dracaena_draco_topf_kunststoff_schwarz_freigestellt.png',
+      'freigestellt/dracaena_topf_keramik_weiss_freigestellt.png',
+      'freigestellt/gefaesse_IMG2490_gptimage15_v8.png',
+      'freigestellt/kaktus_agave_yucca_topf_terrakotta_rotbraun_freigestellt.png',
+      'freigestellt/kiefer_topf_cortenstahl_rotbraun_freigestellt.png',
+      'freigestellt/lavendel_2_freigestellt.png',
+      'freigestellt/lavendel_freigestellt.png',
+      'freigestellt/oleander_topf_keramik_schwarz_3_freigestellt.png',
+      'freigestellt/olivenbaum_topf_keramik_schwarz_freigestellt.png',
+      'freigestellt/phormium_topf_beton_schwarz_freigestellt.png',
+      'freigestellt/phormium_topf_terrakotta_rotbraun_freigestellt.png',
+      'freigestellt/schefflera_strelitzie_topf_keramik_blau_4_freigestellt.png',
+      'freigestellt/schefflera_topf_terrakotta_rotbraun_freigestellt.png',
+      'freigestellt/strelitzie_heliconia_topf_beton_schwarz_freigestellt.png',
+      'freigestellt/strelitzie_palme_pflanzkasten_schwarz_freigestellt.png',
+      'freigestellt/strelitzie_schefflera_topf_keramik_blau_2_freigestellt.png',
+      'freigestellt/strelitzie_schefflera_topf_keramik_blau_3_freigestellt.png',
+      'freigestellt/strelitzie_schefflera_topf_keramik_blau_freigestellt.png',
+      'freigestellt/strelitzie_topf_keramik_anthrazit_freigestellt.png',
+      'freigestellt/strelitzie_topf_keramik_grau_freigestellt.png',
+      'freigestellt/strelitzie_topf_keramik_schwarz_freigestellt.png',
+      'freigestellt/strelitzie_topf_keramik_weiss_2_freigestellt.png',
+      'freigestellt/strelitzie_topf_keramik_weiss_freigestellt.png',
+      'freigestellt/strelitzie_topf_kunststoff_grau_freigestellt.png',
+      'freigestellt/strelitzie_topf_kunststoff_schwarz_freigestellt.png',
+      'freigestellt/westringia_topf_kunststoff_schwarz_freigestellt.png',
+      'freigestellt/yucca_agave_topf_terrakotta_braun_freigestellt.png',
+      'freigestellt/yucca_topf_beton_grau_freigestellt.png',
+      'freigestellt/IMG_0281_conv_freigestellt_v1.png',
+      'freigestellt/IMG_0281_conv_freigestellt_v2.png',
+      'freigestellt/berberitze_topf_keramik_rosa_freigestellt.png',
+      'freigestellt/ahorn_topf_keramik_beige_freigestellt.png',
+    ],
     downloads: [
       { label: 'Gefäße — Allgemeine Auswahl', file: 'Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
       { label: 'Gefäße — Atelier Vierkant', file: 'Design_Analyse_ATV.pdf', icon: '🏺' },
@@ -1031,15 +1079,18 @@ const areas = {
     label: '5', color: '#2e7d32', text: '#fff',
     description: 'Der Übergang zum Nachbargrundstück — bisher offen und unstrukturiert. Ziel: einen grünen, dichten Sichtschutz schaffen der das Grundstück klar abgrenzt und gleichzeitig zum mediterranen Gesamtbild passt. Alle Pflanzen sind ziegensicher und kommen mit minimalem Wasser aus.',
     title: 'Area 5 — Zaun zum Nachbarn',
-    render: 'renders/area5/area5_render_v1.jpg',
+    render: 'fotos/area5/area5_hang_markierungen.jpg',
+    istPhotos: ['area5/area5_steinhaus_brennholz_daemmerung.jpg'],
     photos: [
       'area5/area5_steinhaus_brennholz_daemmerung.jpg',
       'area5/area5_steinhaus_meerblick_sonnenuntergang.jpg',
+      'area5/area5_hang_markierungen.jpg',
     ],
     plants: [
       { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Skulpturpflanze mit starker Silhouette und scharfen Dornen. Ziegenresistent, sehr trockenresistent — ideal als Grenzmarkierung entlang des Zauns.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
       { name: 'Pittosporum tobira', common: 'Japanischer Klebsame', wikiDe: 'Chinesischer Klebsame', role: 'Sichtschutz · Hecke', why: 'Immergrüner, dichter Strauch — ideal als Sichtschutz am Zaun. Aromatisches Laub, ziegensicher, kalkbodenresistent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/pittosporum_tobira.jpg' },
       { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Aufrechter Wuchs, blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
+      { name: 'Opuntia ficus-indica', common: 'Feigenkaktus', role: 'Solitär · Charakter', why: 'Ikonische Mallorca-Pflanze mit großen grünen Fächersegmenten. Kein Wasser nötig, strukturbildend, ziegenresistent dank Dornen.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/opuntia_ficus-indica.jpg' },
     ],
     downloads: [
       { label: 'Pittosporum — Sichtschutz Analyse', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
@@ -1050,7 +1101,11 @@ const areas = {
     label: '6', color: '#2e7d32', text: '#fff',
     description: 'Wilder Felshang mit Funkmast — eine Zone die bewusst natürlich bleibt, aber gezielt aufgewertet wird. Skulpturale Pflanzen setzen Akzente gegen den rauen Felshintergrund. Kein Bewässerungssystem nötig — alles wächst im natürlichen Rhythmus des Klimas.',
     title: 'Area 6 — Berg · Funkmast',
-    render: 'renders/area6/area6_render_v1.jpg',
+    render: 'fotos/area6/area6_konzept_zeichnung.jpg',
+    istPhotos: ['area6/area6_felsiger_hang_antennenmast.jpg'],
+    istSoll: [
+      { ist: 'fotos/area6/area6_fels_markierungen.jpg', soll: 'fotos/area6/area6_konzept_zeichnung.jpg', label: 'Fels — Markierungen → Konzept' },
+    ],
     photos: [
       'area6/area6_vertrockneter_baum_felswand.jpg',
       'area6/area6_vertrockneter_baum_nahaufnahme.jpg',
@@ -1065,6 +1120,17 @@ const areas = {
       { name: 'Agave americana', common: 'Amerikanische Agave', role: 'Solitär · Akzent', why: 'Robuste Skulpturpflanze, braucht kaum Pflege. Passt zum wilden Bergcharakter dieser Zone — markante Silhouette gegen den Funkmast-Hintergrund.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/agave_americana.jpg' },
       { name: 'Pittosporum tobira', common: 'Japanischer Klebsame', wikiDe: 'Chinesischer Klebsame', role: 'Strukturpflanze · Felshang', why: 'Tiefgehende Bewurzelung in Felsspalten, windresistent, kalkbodenresistent. Ideal für den exponierten Bergbereich.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/pittosporum_tobira.jpg' },
       { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent. Verträgt Fels und Trockenheit bestens.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
+      { name: 'Trachelospermum jasminoides', common: 'Sternjasmin', role: 'Kletterpflanze · Duft', why: 'Immergrüner Kletterer mit weißen, intensiv duftenden Blüten. Ideal für Felswände und Mauern — rankt ohne Bewässerung und verträgt Mallorcas Klima hervorragend.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'fotos/area6/trachelospermum_jasminoides.jpg' },
+      { name: 'Syzygium australe', common: 'Bürstenkirsche', role: 'Sichtschutz · Hecke', why: 'Kompakter, immergrüner Strauch mit glänzendem Laub und roten Früchten. Ideal als Sichtschutz am Felshang — windresistent, pflegeleicht, verträgt Mallorcas Klima.', ziege: 'gefährdet', ziegeLabel: '🐐 Schutz nötig', img: 'fotos/area6/syzygium_australe.jpg' },
+      { name: 'Opuntia ficus-indica', common: 'Feigenkaktus', role: 'Solitär · Charakter', why: 'Ikonische Mallorca-Pflanze mit großen grünen Fächersegmenten. Braucht kein Wasser, strukturbildend, absolut ziegenresistent dank Dornen.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/opuntia_ficus-indica.jpg' },
+    ],
+    moods: [
+      'fotos/area6/trachelospermum_jasminoides.jpg',
+      'fotos/area6/syzygium_australe.jpg',
+      'fotos/area6/area6_trockensteinmauer.jpg',
+      'fotos/area6/kalkstein_steinbruch.jpg',
+      'fotos/area6/schiefer_steinbruch.jpg',
+      'fotos/area6/area6_fels_markierungen.jpg',
     ],
     downloads: [
       { label: 'Pittosporum — Sichtschutz Analyse', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
@@ -1488,6 +1554,26 @@ function openModal(key) {
     grid.appendChild(plantGrid);
     } // end plants check
 
+    // 6b. Topf-Galerie
+    if (area.topfGallery && area.topfGallery.length > 0) {
+      const topfDivider = document.createElement('div');
+      topfDivider.className = 'section-divider';
+      topfDivider.textContent = '🏺 Töpfe & Pflanzen — Auswahl freigestellt';
+      grid.appendChild(topfDivider);
+      const topfGrid = document.createElement('div');
+      topfGrid.style.cssText = 'grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;';
+      area.topfGallery.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.loading = 'lazy';
+        img.style.cssText = 'width:100%;aspect-ratio:1/1;object-fit:contain;background:#111;border-radius:8px;cursor:pointer;padding:6px;box-sizing:border-box;';
+        img.onclick = (e) => { e.stopPropagation(); openLightbox(src); };
+        img.onerror = function(){ this.style.display='none'; };
+        topfGrid.appendChild(img);
+      });
+      grid.appendChild(topfGrid);
+    }
+
     // 6. Downloads
     if (area.downloads && area.downloads.length > 0) {
       const dlDivider = document.createElement('div');
@@ -1765,6 +1851,24 @@ function openPDFModal() {
     });
   });
   // Referenz-Dokumente
+  // Budget Excel
+  const budgetLabel = document.createElement('div');
+  budgetLabel.className = 'pdf-section-label';
+  budgetLabel.textContent = 'Budget & Kalkulation';
+  listEl.appendChild(budgetLabel);
+  const budgetLink = document.createElement('a');
+  budgetLink.className = 'pdf-entry';
+  budgetLink.href = 'Casa_Tortuga_Pflanzenliste.xlsx';
+  budgetLink.download = 'Casa_Tortuga_Pflanzenliste.xlsx';
+  budgetLink.innerHTML = `
+    <div class="pdf-entry-left">
+      <span class="pdf-entry-icon">📊</span>
+      <div><div class="pdf-entry-name">Pflanzenliste & Kostenkalkulation</div><div class="pdf-entry-area">Frontera · Saporasssa · Logistik · Kran</div></div>
+    </div>
+    <span class="pdf-entry-dl">↓ XLSX</span>
+  `;
+  listEl.appendChild(budgetLink);
+
   const refDocs = [
     { label: 'Referenz — Finca Alt-Bestand', file: 'Pflanzenliste_FincaOld.pdf', icon: '📋' },
     { label: 'Referenz — Fronda', file: 'Pflanzenliste_Fronda.pdf', icon: '📋' },
@@ -1849,11 +1953,16 @@ buildHouseMarker();
     <div id="pitch-stats">
       <div class="pitch-stat"><span class="ps-num">7</span><span class="ps-label">Bereiche</span></div>
       <div class="pitch-stat"><span class="ps-num">~25</span><span class="ps-label">Pflanzenarten</span></div>
+      <div class="pitch-stat"><span class="ps-num">♾</span><span class="ps-label">Wartungsarm</span></div>
 
 
     </div>
     <div id="pitch-areas-label">DIE SIEBEN BEREICHE</div>
     <div id="pitch-areas"></div>
+    <div style="margin-top:28px;padding:18px 20px;background:rgba(255,255,255,0.05);border-left:3px solid #fc0;border-radius:4px;">
+      <div style="color:#fc0;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">⚠ Projektbedingungen</div>
+      <p style="color:#ccc;font-size:14px;line-height:1.6;margin:0;">Die Anlieferung von Erde, Steinen und großen Pflanzen erfordert aufgrund der Geländesituation den Einsatz eines Krans — Material muss über das Haus gehoben werden. Dies ist bei der Projektplanung und Kalkulation zu berücksichtigen.</p>
+    </div>
   </div>
 </div>
 
