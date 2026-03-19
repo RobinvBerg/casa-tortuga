@@ -933,10 +933,9 @@ const areas = {
       'renders/area1/area1_pflanze_agapanthus.png',
     ],
     downloads: [
-      { label: 'Pflanzenliste Baumschule', file: 'Pflanzenliste_Baumschule_v4.pdf', icon: '🌿' },
-      { label: 'Ziegenanalyse', file: 'Ziegenanalyse.pdf', icon: '🐐' },
-      { label: 'Pflanzinseln Konzept', file: 'Pflanzinseln_PortalsNous.pdf', icon: '📐' },
-
+      { label: 'Pflanzenliste — Baumschule Empfehlung', file: 'Pflanzenliste_Baumschule_v4.pdf', icon: '🌿' },
+      { label: 'Ziegensicherheit — Alle Pflanzen', file: 'Ziegenanalyse.pdf', icon: '🐐' },
+      { label: 'Referenz — Pflanzinseln Portals Nous', file: 'Pflanzinseln_PortalsNous.pdf', icon: '📐' },
     ]
   },
   '2': {
@@ -973,10 +972,10 @@ const areas = {
       { name: 'Cordyline australis', common: 'Keulenlilie', wikiUrl: 'https://en.wikipedia.org/wiki/Cordyline_australis', role: 'Solitär · Höhe ⭐ Favorit', why: 'Tropisch wirkende Palmenform, sehr robust. Scharfe Blattspitzen deterrieren Ziegen — Robins Favorit für Area 2.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/cordyline_australis.jpg' },
     ],
     downloads: [
-      { label: 'Gefäße — Allgemeine Analyse', file: 'Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
-      { label: 'Atelier Vierkant — Gefäße & Formsprache', file: 'Design_Analyse_ATV.pdf', icon: '🏺' },
-      { label: 'Design Analyse Domani', file: 'Design_Analyse_Domani.pdf', icon: '📋' },
-      { label: 'Design Analyse Foronda', file: 'Design_Analyse_Foronda.pdf', icon: '📋' },
+      { label: 'Gefäße — Allgemeine Auswahl', file: 'Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
+      { label: 'Gefäße — Atelier Vierkant', file: 'Design_Analyse_ATV.pdf', icon: '🏺' },
+      { label: 'Gefäße — Domani', file: 'Design_Analyse_Domani.pdf', icon: '🏺' },
+      { label: 'Gefäße — Foronda', file: 'Design_Analyse_Foronda.pdf', icon: '🏺' },
     ]
   },
   '3': {
@@ -1015,7 +1014,7 @@ const areas = {
       { name: 'Perovskia atriplicifolia', common: 'Russischer Salbei', wikiDe: 'Silber-Perowskie', role: 'Hauptbepflanzung · Lavendel-Lookalike', why: 'Sieht identisch zu Lavendel aus — silbrige Stängel, lila Blütenähren — aber Ziegen meiden ihn wegen des intensiven Dufts. Extrem trockenresistent, perfekt für Mallorca.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/perovskia_atriplicifolia.jpg' },
     ],
     downloads: [
-      { label: 'Perovskia atriplicifolia — Analyse Area 4', file: 'Perovskia_Analyse_Area4.pdf', icon: '🌿' },
+      { label: 'Perovskia — Lavendel-Lookalike Analyse', file: 'Perovskia_Analyse_Area4.pdf', icon: '🌿' },
     ],
   },
   '5': {
@@ -1033,8 +1032,9 @@ const areas = {
       { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Aufrechter Wuchs, blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
     ],
     downloads: [
-      { label: 'Pittosporum tobira — Analyse Mallorca', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
-      { label: 'Euphorbia characias — Analyse Mallorca', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
+      { label: 'Pittosporum — Sichtschutz Analyse', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
+      { label: 'Euphorbia — Strukturpflanze Analyse', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
+      { label: 'Sukkulenten — Referenz Lloseta', file: 'Sukkulenten_Analyse_Lloseta.pdf', icon: '🌵' },
     ],
   },
   '6': {
@@ -1058,8 +1058,8 @@ const areas = {
       { name: 'Euphorbia characias', common: 'Wolfsmilch', wikiDe: 'Palisaden-Wolfsmilch', role: 'Strukturpflanze · Kontrast', why: 'Blaugrünes Laub, gelb-grüne Blütenstände. Milchsaft giftig — absolut ziegenresistent. Verträgt Fels und Trockenheit bestens.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/euphorbia_characias.jpg' },
     ],
     downloads: [
-      { label: 'Pittosporum tobira — Analyse Mallorca', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
-      { label: 'Euphorbia characias — Analyse Mallorca', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
+      { label: 'Pittosporum — Sichtschutz Analyse', file: 'Pittosporum_Analyse.pdf', icon: '🌿' },
+      { label: 'Euphorbia — Strukturpflanze Analyse', file: 'Euphorbia_Analyse.pdf', icon: '🌿' },
     ],
   },
   '7': {
@@ -1675,6 +1675,32 @@ function openPDFModal() {
       listEl.appendChild(link);
     });
   });
+  // Referenz-Dokumente
+  const refDocs = [
+    { label: 'Referenz — Finca Alt-Bestand', file: 'Pflanzenliste_FincaOld.pdf', icon: '📋' },
+    { label: 'Referenz — Fronda', file: 'Pflanzenliste_Fronda.pdf', icon: '📋' },
+    { label: 'Referenz — Lloseta', file: 'Pflanzenliste_Lloseta.pdf', icon: '📋' },
+    { label: 'Referenz — Beth', file: 'Pflanzenliste_beth.pdf', icon: '📋' },
+  ];
+  const refLabel = document.createElement('div');
+  refLabel.className = 'pdf-section-label';
+  refLabel.textContent = 'Referenzen';
+  listEl.appendChild(refLabel);
+  refDocs.forEach(dl => {
+    const link = document.createElement('a');
+    link.className = 'pdf-entry';
+    link.href = dl.file;
+    link.target = '_blank';
+    link.innerHTML = `
+      <div class="pdf-entry-left">
+        <span class="pdf-entry-icon">${dl.icon}</span>
+        <div><div class="pdf-entry-name">${dl.label}</div></div>
+      </div>
+      <span class="pdf-entry-dl">↓ PDF</span>
+    `;
+    listEl.appendChild(link);
+  });
+
   document.getElementById('pdf-modal').classList.add('open');
 }
 
