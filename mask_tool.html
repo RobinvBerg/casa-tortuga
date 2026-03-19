@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mask Tool</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; color: #eee; font-family: Helvetica, sans-serif; }
+#bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #1c1c1c; border-bottom: 1px solid #333; flex-wrap: wrap; }
+#bar h2 { font-weight: 300; font-size: 14px; margin-right: 8px; }
+button { padding: 8px 16px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; color: #fff; text-transform: uppercase; letter-spacing: .05em; }
+.b-paint { background: #2e7d32; } .b-erase { background: #7b1fa2; } .b-clear { background: #555; } .b-save { background: #1565c0; font-size: 13px; padding: 8px 22px; }
+.active { outline: 2px solid #fff; }
+label { font-size: 12px; color: #aaa; }
+#status { padding: 6px 14px; font-size: 12px; min-height: 22px; }
+#wrap { position: relative; display: inline-block; margin: 10px; cursor: crosshair; }
+canvas { display: block; }
+#ov { position: absolute; top: 0; left: 0; opacity: .55; cursor: crosshair; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <h2>Mask Tool</h2>
+  <button class="b-paint active" id="bp" onclick="mode='paint';bp.className='b-paint active';be.className='b-erase'">🖌 Malen</button>
+  <button class="b-erase" id="be" onclick="mode='erase';be.className='b-erase active';bp.className='b-paint'">⌫ Radieren</button>
+  <button class="b-clear" onclick="oc.clearRect(0,0,ov.width,ov.height)">↺ Löschen</button>
+  <label>Pinsel: <input type="range" id="bs" min="5" max="150" value="40" oninput="bv.textContent=this.value+'px'"> <span id="bv">40px</span></label>
+  <button class="b-save" onclick="save()">💾 Speichern</button>
+</div>
+<div id="status">Lädt…</div>
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <canvas id="ov"></canvas>
+</div>
+<script>
+var cv=document.getElementById('cv'),ov=document.getElementById('ov');
+var cc=cv.getContext('2d'),oc=ov.getContext('2d');
+var mode='paint',painting=false;
+var img=new Image();
+img.crossOrigin='anonymous';
+img.onload=function(){
+  var mw=Math.min(window.innerWidth-30,1100);
+  var sc=mw/img.naturalWidth;
+  cv.width=ov.width=Math.round(img.naturalWidth*sc);
+  cv.height=ov.height=Math.round(img.naturalHeight*sc);
+  cc.drawImage(img,0,0,cv.width,cv.height);
+  document.getElementById('status').textContent='Bereit — '+img.naturalWidth+'×'+img.naturalHeight+'px';
+};
+img.onerror=function(){ document.getElementById('status').textContent='❌ Bild nicht geladen'; };
+img.src='/fotos/area7/area7_ist_flachdach.jpg?t='+Date.now();
+
+function pos(e){
+  var r=ov.getBoundingClientRect();
+  var src=e.touches?e.touches[0]:e;
+  return {x:src.clientX-r.left, y:src.clientY-r.top};
+}
+function paint(e){
+  if(!painting)return;
+  e.preventDefault();
+  var p=pos(e), r=parseInt(document.getElementById('bs').value)/2;
+  oc.globalCompositeOperation=mode==='paint'?'source-over':'destination-out';
+  oc.fillStyle='rgba(220,30,30,0.8)';
+  oc.beginPath(); oc.arc(p.x,p.y,r,0,Math.PI*2); oc.fill();
+}
+ov.addEventListener('mousedown',function(e){painting=true;paint(e);});
+ov.addEventListener('mousemove',paint);
+window.addEventListener('mouseup',function(){painting=false;});
+ov.addEventListener('touchstart',function(e){painting=true;paint(e);},{passive:false});
+ov.addEventListener('touchmove',paint,{passive:false});
+window.addEventListener('touchend',function(){painting=false;});
+
+function save(){
+  document.getElementById('status').textContent='⏳ Speichern…';
+  // Maske s/w
+  var mc=document.createElement('canvas');
+  mc.width=img.naturalWidth; mc.height=img.naturalHeight;
+  var mx=mc.getContext('2d');
+  mx.fillStyle='black'; mx.fillRect(0,0,mc.width,mc.height);
+  var tmp=document.createElement('canvas');
+  tmp.width=img.naturalWidth; tmp.height=img.naturalHeight;
+  var tx=tmp.getContext('2d');
+  tx.drawImage(ov,0,0,img.naturalWidth,img.naturalHeight);
+  var td=tx.getImageData(0,0,img.naturalWidth,img.naturalHeight);
+  var md=mx.getImageData(0,0,img.naturalWidth,img.naturalHeight);
+  for(var i=0;i<td.data.length;i+=4){
+    if(td.data[i+3]>30){md.data[i]=md.data[i+1]=md.data[i+2]=md.data[i+3]=255;}
+  }
+  mx.putImageData(md,0,0);
+  // Preview
+  var pc=document.createElement('canvas');
+  pc.width=img.naturalWidth; pc.height=img.naturalHeight;
+  var px=pc.getContext('2d');
+  px.drawImage(img,0,0);
+  px.drawImage(ov,0,0,img.naturalWidth,img.naturalHeight);
+
+  fetch('/save',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify([
+      {filename:'fotos/area7/area7_mask.png', data:mc.toDataURL('image/png')},
+      {filename:'fotos/area7/area7_mask_preview.jpg', data:pc.toDataURL('image/jpeg',0.92)}
+    ])
+  }).then(function(r){return r.json();}).then(function(){
+    document.getElementById('status').textContent='✅ Gespeichert! Sag KIRA Bescheid.';
+  }).catch(function(e){
+    document.getElementById('status').textContent='❌ '+e;
+  });
+}
+</script>
+</body>
+</html>

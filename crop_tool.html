@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Crop Tool — Area 7</title>
+<style>
+  body { margin: 0; background: #111; color: #eee; font-family: Helvetica, sans-serif; }
+  h2 { padding: 12px 16px; margin: 0; font-weight: 300; font-size: 16px; letter-spacing: 0.1em; background: #1a1a1a; }
+  #hint { padding: 8px 16px; font-size: 12px; color: #888; background: #1a1a1a; }
+  #canvas-wrap { position: relative; display: inline-block; margin: 16px; cursor: crosshair; }
+  canvas { display: block; max-width: 100%; }
+  #overlay { position: absolute; top: 0; left: 0; cursor: crosshair; }
+  #controls { padding: 12px 16px; display: flex; gap: 12px; align-items: center; }
+  button { background: #2e7d32; color: #fff; border: none; padding: 10px 24px; font-size: 13px; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; }
+  button:hover { background: #388e3c; }
+  button#reset-btn { background: #444; }
+  #status { font-size: 12px; color: #aaa; padding: 8px 16px; }
+</style>
+</head>
+<body>
+<h2>Crop Tool — Garage Bereich markieren</h2>
+<div id="hint">Klick + Ziehen zum Markieren des Garage-Bereichs</div>
+<div id="canvas-wrap">
+  <canvas id="canvas"></canvas>
+  <canvas id="overlay"></canvas>
+</div>
+<div id="controls">
+  <button id="save-btn" onclick="saveCrop()">✂️ Ausschnitt speichern</button>
+  <button id="reset-btn" onclick="resetSelection()">↺ Reset</button>
+</div>
+<div id="status">Noch kein Bereich markiert.</div>
+
+<script>
+const IMG_PATH = '/fotos/area7/area7_vogelperspektive_haus.jpg';
+const canvas = document.getElementById('canvas');
+const overlay = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+const octx = overlay.getContext('2d');
+const status = document.getElementById('status');
+
+const img = new Image();
+img.src = IMG_PATH;
+img.onload = () => {
+  const maxW = Math.min(window.innerWidth - 40, 1400);
+  const scale = maxW / img.naturalWidth;
+  canvas.width = overlay.width = Math.round(img.naturalWidth * scale);
+  canvas.height = overlay.height = Math.round(img.naturalHeight * scale);
+  overlay.style.width = canvas.style.width = canvas.width + 'px';
+  overlay.style.height = canvas.style.height = canvas.height + 'px';
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  status.textContent = `Bild geladen: ${img.naturalWidth}×${img.naturalHeight}px — Bereich markieren`;
+};
+
+let startX, startY, endX, endY, drawing = false;
+
+overlay.addEventListener('mousedown', e => {
+  const r = overlay.getBoundingClientRect();
+  startX = e.clientX - r.left;
+  startY = e.clientY - r.top;
+  drawing = true;
+});
+
+overlay.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  const r = overlay.getBoundingClientRect();
+  endX = e.clientX - r.left;
+  endY = e.clientY - r.top;
+  drawRect();
+});
+
+overlay.addEventListener('mouseup', e => {
+  drawing = false;
+  const r = overlay.getBoundingClientRect();
+  endX = e.clientX - r.left;
+  endY = e.clientY - r.top;
+  drawRect();
+  const scale = img.naturalWidth / canvas.width;
+  const x1 = Math.round(Math.min(startX, endX) * scale);
+  const y1 = Math.round(Math.min(startY, endY) * scale);
+  const x2 = Math.round(Math.max(startX, endX) * scale);
+  const y2 = Math.round(Math.max(startY, endY) * scale);
+  status.textContent = `Markiert: x=${x1}, y=${y1}, w=${x2-x1}, h=${y2-y1}px (Originalgröße) — jetzt "Ausschnitt speichern" klicken`;
+});
+
+function drawRect() {
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  octx.strokeStyle = '#fc0';
+  octx.lineWidth = 2;
+  octx.fillStyle = 'rgba(255,200,0,0.1)';
+  const x = Math.min(startX, endX), y = Math.min(startY, endY);
+  const w = Math.abs(endX - startX), h = Math.abs(endY - startY);
+  octx.fillRect(x, y, w, h);
+  octx.strokeRect(x, y, w, h);
+}
+
+function resetSelection() {
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  startX = startY = endX = endY = null;
+  status.textContent = 'Reset — neu markieren';
+}
+
+function saveCrop() {
+  if (!startX && startX !== 0) { alert('Erst Bereich markieren!'); return; }
+  const scale = img.naturalWidth / canvas.width;
+  const x = Math.round(Math.min(startX, endX) * scale);
+  const y = Math.round(Math.min(startY, endY) * scale);
+  const w = Math.round(Math.abs(endX - startX) * scale);
+  const h = Math.round(Math.abs(endY - startY) * scale);
+
+  const tmp = document.createElement('canvas');
+  tmp.width = w; tmp.height = h;
+  tmp.getContext('2d').drawImage(img, x, y, w, h, 0, 0, w, h);
+
+  // Save via download + show coords
+  tmp.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'area7_garage_crop.jpg';
+    a.click();
+    status.innerHTML = `✅ Gespeichert! Koordinaten: x=${x}, y=${y}, w=${w}, h=${h} — sag KIRA diese Zahlen`;
+  }, 'image/jpeg', 0.95);
+}
+</script>
+</body>
+</html>
