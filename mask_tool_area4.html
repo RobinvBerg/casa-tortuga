@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mask Tool — Area 4</title>
+<style>
+  body { margin: 0; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; color: #fff; }
+  h2 { margin: 0 0 10px; }
+  .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  #saveBtn { background: #4caf50; color: #fff; font-weight: bold; }
+  #clearBtn { background: #f44336; color: #fff; }
+  #undoBtn { background: #ff9800; color: #fff; }
+  label { font-size: 14px; }
+  canvas { border: 2px solid #555; cursor: crosshair; }
+  #status { margin-top: 10px; font-size: 13px; color: #aaa; }
+  .size-ctrl { display: flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+<h2>Mask Tool — Area 4 (Perovskia Beet)</h2>
+<div class="controls">
+  <div class="size-ctrl">
+    <label>Pinsel:</label>
+    <input type="range" id="brushSize" min="5" max="80" value="30">
+    <span id="brushLabel">30px</span>
+  </div>
+  <label><input type="checkbox" id="showOverlay" checked> Overlay zeigen</label>
+  <button id="undoBtn">↩ Undo</button>
+  <button id="clearBtn">🗑 Clear</button>
+  <button id="saveBtn">💾 Maske speichern</button>
+</div>
+<canvas id="canvas"></canvas>
+<div id="status">Lade Bild...</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const maskCanvas = document.createElement('canvas');
+const maskCtx = maskCanvas.getContext('2d');
+const history = [];
+
+const img = new Image();
+img.src = 'fotos/area4/area4_steinterrasse_liege_meerblick.jpg';
+img.onload = () => {
+  canvas.width = img.width;
+  canvas.height = img.height;
+  maskCanvas.width = img.width;
+  maskCanvas.height = img.height;
+  draw();
+  document.getElementById('status').textContent = `${img.width}×${img.height}px — Male über das Beet (weiß = inpainting)`;
+};
+
+function draw() {
+  ctx.drawImage(img, 0, 0);
+  if (document.getElementById('showOverlay').checked) {
+    ctx.globalAlpha = 0.55;
+    ctx.drawImage(maskCanvas, 0, 0);
+    ctx.globalAlpha = 1;
+  }
+}
+
+document.getElementById('showOverlay').addEventListener('change', draw);
+
+let painting = false;
+const brush = () => parseInt(document.getElementById('brushSize').value);
+document.getElementById('brushSize').addEventListener('input', e => {
+  document.getElementById('brushLabel').textContent = e.target.value + 'px';
+});
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / r.width;
+  const scaleY = canvas.height / r.height;
+  const touch = e.touches ? e.touches[0] : e;
+  return { x: (touch.clientX - r.left) * scaleX, y: (touch.clientY - r.top) * scaleY };
+}
+
+function saveHistory() {
+  history.push(maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height));
+  if (history.length > 30) history.shift();
+}
+
+canvas.addEventListener('mousedown', e => { saveHistory(); painting = true; paint(e); });
+canvas.addEventListener('mousemove', e => { if (painting) paint(e); });
+canvas.addEventListener('mouseup', () => painting = false);
+canvas.addEventListener('mouseleave', () => painting = false);
+
+function paint(e) {
+  const {x, y} = getPos(e);
+  maskCtx.fillStyle = 'white';
+  maskCtx.beginPath();
+  maskCtx.arc(x, y, brush()/2, 0, Math.PI*2);
+  maskCtx.fill();
+  draw();
+}
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  saveHistory();
+  maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+  draw();
+});
+
+document.getElementById('undoBtn').addEventListener('click', () => {
+  if (history.length > 0) {
+    maskCtx.putImageData(history.pop(), 0, 0);
+    draw();
+  }
+});
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  // Build proper mask: white where painted, black elsewhere (fully opaque PNG)
+  const out = document.createElement('canvas');
+  out.width = maskCanvas.width; out.height = maskCanvas.height;
+  const octx = out.getContext('2d');
+  octx.fillStyle = 'black';
+  octx.fillRect(0, 0, out.width, out.height);
+  octx.drawImage(maskCanvas, 0, 0);
+
+  const dataUrl = out.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = 'area4_mask.png';
+  a.click();
+  document.getElementById('status').textContent = '✅ Download gestartet — area4_mask.png';
+});
+</script>
+</body>
+</html>
