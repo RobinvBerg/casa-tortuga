@@ -5,7 +5,161 @@
 <title>Casa Tortuga — Gartengestaltung</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #111; color: #eee; font-family: 'Helvetica Neue', sans-serif; overflow: hidden; height: 100vh; }
+body { background: #111; color: #eee; font-family: 'Helvetica Neue', sans-serif; overflow-x: hidden; }
+
+/* Opener */
+#opener {
+  width: 100vw;
+  min-height: 100vh;
+  background: #f5f2ec;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40px 20px 60px;
+}
+#opener h1 {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: clamp(18px, 3vw, 36px);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: #2a2a2a;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  text-align: center;
+}
+#opener img {
+  max-width: min(680px, 90vw);
+  max-height: 75vh;
+  object-fit: contain;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+}
+#opener .enter-btn {
+  margin-top: 32px;
+  padding: 14px 40px;
+  background: #2a2a2a;
+  color: #f5f2ec;
+  border: none;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#opener .enter-btn:hover { background: #444; }
+
+/* Map section */
+#map-section {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+#back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  background: rgba(0,0,0,0.55);
+  color: #eee;
+  border: none;
+  padding: 8px 16px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+}
+#back-btn:hover { background: rgba(0,0,0,0.8); }
+
+#project-panel {
+  position: absolute;
+  top: 56px;
+  left: 16px;
+  z-index: 200;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(6px);
+  border-radius: 6px;
+  padding: 12px 14px;
+  width: 220px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  color: #eee;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 11px;
+}
+#panel-title {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 6px;
+}
+.panel-plant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.panel-plant img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.panel-plant-name {
+  font-size: 10px;
+  line-height: 1.3;
+  color: #ddd;
+}
+.panel-plant-common {
+  font-size: 9px;
+  color: #888;
+}
+#panel-docs {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 8px;
+}
+.panel-doc-link {
+  display: block;
+  color: #8bc34a;
+  text-decoration: none;
+  font-size: 10px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel-doc-link:hover { color: #fff; }
+
+.skizze-hot {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  border-radius: 50%;
+  background: rgba(80,160,80,0.15);
+  border: 2px solid rgba(80,160,80,0.6);
+  animation: pulse-hot 2s infinite;
+  transition: background 0.2s;
+}
+.skizze-hot:hover {
+  background: rgba(80,160,80,0.4);
+  box-shadow: 0 0 0 4px rgba(80,160,80,0.4);
+}
+@keyframes pulse-hot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(80,160,80,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(80,160,80,0); }
+}
 
 #map-wrap {
   position: relative;
@@ -15,6 +169,7 @@ body { background: #111; color: #eee; font-family: 'Helvetica Neue', sans-serif;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: #111;
 }
 
 #map-container {
@@ -112,6 +267,283 @@ body { background: #111; color: #eee; font-family: 'Helvetica Neue', sans-serif;
   z-index: 300; box-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
 #lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Floating Toolbar */
+#toolbar {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 60;
+  display: flex;
+  gap: 10px;
+}
+.tb-btn {
+  background: rgba(10,10,10,0.82);
+  color: #eee;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 10px 18px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 24px;
+  backdrop-filter: blur(8px);
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.tb-btn:hover {
+  background: rgba(46,125,50,0.7);
+  border-color: rgba(255,255,255,0.4);
+}
+
+/* House marker */
+.marker-house {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  font-size: 28px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
+  transition: transform 0.15s, filter 0.15s;
+  line-height: 1;
+  z-index: 10;
+}
+.marker-house:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  filter: drop-shadow(0 2px 12px rgba(255,220,80,0.8));
+}
+
+/* Elevator Pitch Modal */
+#pitch-modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(5,5,5,0.97);
+  z-index: 300;
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: center;
+}
+#pitch-modal.open { display: flex; }
+#pitch-close {
+  position: fixed;
+  top: 18px; right: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 20px;
+  width: 48px; height: 48px; border-radius: 50%;
+  cursor: pointer; z-index: 310;
+  display: flex; align-items: center; justify-content: center;
+}
+#pitch-close:hover { background: rgba(255,255,255,0.2); }
+#pitch-inner {
+  max-width: 960px;
+  width: 100%;
+  padding: 80px 40px 60px;
+  text-align: center;
+}
+#pitch-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #5a8a40;
+  margin-bottom: 16px;
+}
+#pitch-title {
+  font-size: clamp(36px, 7vw, 80px);
+  font-weight: 200;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 32px;
+}
+#pitch-statement {
+  font-size: clamp(15px, 2vw, 20px);
+  font-weight: 300;
+  line-height: 1.75;
+  color: #bbb;
+  max-width: 700px;
+  margin: 0 auto 48px;
+}
+#pitch-stats {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 5vw, 60px);
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+  padding: 32px 0;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+}
+.pitch-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ps-num {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 200;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+.ps-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #555;
+}
+#pitch-areas-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #444;
+  margin-bottom: 20px;
+}
+#pitch-areas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  text-align: left;
+}
+.pitch-area-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.pitch-area-card:hover {
+  border-color: rgba(46,125,50,0.6);
+  transform: translateY(-2px);
+}
+.pitch-area-thumb {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+  background: #1a1a1a;
+}
+.pitch-area-body {
+  padding: 12px 14px;
+}
+.pitch-area-num {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5a8a40;
+  margin-bottom: 4px;
+}
+.pitch-area-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #eee;
+  line-height: 1.3;
+}
+.pitch-area-desc {
+  font-size: 10px;
+  color: #666;
+  margin-top: 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Overlay modals (PDFs + Pflanzen) */
+#pdf-modal, #pflanzen-modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 300;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+}
+#pdf-modal.open, #pflanzen-modal.open { display: flex; }
+.overlay-modal-inner {
+  max-width: 800px;
+  width: 100%;
+  padding-top: 20px;
+}
+.overlay-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 14px;
+}
+.overlay-modal-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #eee;
+}
+.overlay-modal-close {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-size: 18px;
+  width: 40px; height: 40px; border-radius: 50%;
+  cursor: pointer;
+}
+.overlay-modal-close:hover { background: rgba(255,255,255,0.2); }
+
+/* PDF list */
+#pdf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 40px;
+}
+.pdf-section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #555;
+  margin: 16px 0 8px;
+}
+.pdf-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.pdf-entry:hover { background: rgba(255,255,255,0.08); }
+.pdf-entry-left { display: flex; align-items: center; gap: 12px; }
+.pdf-entry-icon { font-size: 20px; flex-shrink: 0; }
+.pdf-entry-name { font-size: 13px; color: #ddd; }
+.pdf-entry-area { font-size: 10px; color: #555; margin-top: 3px; letter-spacing: 0.1em; }
+.pdf-entry-dl { font-size: 11px; color: #5a8a40; letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0; }
+
+/* Pflanzen list */
+#pflanzen-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  padding-bottom: 40px;
+}
+.pfl-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pfl-card img {
+  width: 100%; height: 120px; object-fit: cover; display: block; background: #1a1a1a;
+}
+.pfl-card-body { padding: 12px; }
+.pfl-card-name { font-size: 12px; font-weight: 500; color: #eee; margin-bottom: 2px; }
+.pfl-card-common { font-size: 11px; color: #888; margin-bottom: 6px; }
+.pfl-card-areas { font-size: 10px; color: #5a8a40; letter-spacing: 0.05em; }
+.pfl-card-ziege { font-size: 10px; color: #666; margin-top: 4px; }
 
 /* Hint */
 #hint {
@@ -389,13 +821,85 @@ body.edit-mode .marker { pointer-events: none; }
 </head>
 <body>
 
+<!-- OPENER -->
+<section id="opener">
+  <h1>Casa Tortuga — Gartengestaltung</h1>
+  <div id="skizze-wrap" style="position:relative; display:inline-block;">
+    <img src="skizze_annotiert.jpg" alt="Lageplan Casa Tortuga" id="skizze-img" style="max-width:min(680px,90vw);max-height:75vh;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,0.12);pointer-events:none;display:block;">
+    <!-- Hotspots in % -->
+    <div class="skizze-hot" style="left:57%;top:34%;" onclick="openAreaFromSkizze(-1)"></div>
+    <div class="skizze-hot" style="left:64.5%;top:29%;" onclick="openAreaFromSkizze(0)"></div>
+    <div class="skizze-hot" style="left:63%;top:40%;" onclick="openAreaFromSkizze(1)"></div>
+    <div class="skizze-hot" style="left:61%;top:45%;" onclick="openAreaFromSkizze(2)"></div>
+    <div class="skizze-hot" style="left:36%;top:41%;" onclick="openAreaFromSkizze(3)"></div>
+    <div class="skizze-hot" style="left:70%;top:74%;" onclick="openAreaFromSkizze(4)"></div>
+    <div class="skizze-hot" style="left:88%;top:38%;" onclick="openAreaFromSkizze(5)"></div>
+    <div class="skizze-hot" style="left:28%;top:75%;" onclick="openAreaFromSkizze(6)"></div>
+  </div>
+  <p style="margin-top:20px; color:#888; font-size:13px; letter-spacing:0.08em; text-align:center;">Tippen Sie auf eine Nummer um Ihren Bereich zu entdecken</p>
+  <button class="enter-btn" onclick="document.getElementById('opener').style.display='none'; document.getElementById('map-section').style.display='block'; buildMarkers(); buildPanel();">Alle Bereiche erkunden →</button>
+</section>
+
+<section id="map-section">
+<button id="back-btn" onclick="document.getElementById('map-section').style.display='none'; document.getElementById('opener').style.display='flex';">← Übersicht</button>
+<div id="project-panel">
+  <div id="panel-title">🌿 Pflanzkonzept &amp; Dokumente</div>
+  <div id="panel-plants"></div>
+  <div id="panel-docs"></div>
+</div>
 <div id="map-wrap">
   <div id="map-container">
     <img id="map-img" src="sat_picker_base.png" alt="Casa Tortuga Satellite">
   </div>
 </div>
 
-<div id="hint">Klick auf einen Bereich für Fotos</div>
+<div id="hint">Klick auf einen Bereich für Details · Haus für Projektübersicht</div>
+
+<!-- FLOATING TOOLBAR -->
+<div id="toolbar">
+  <button class="tb-btn" onclick="openPDFModal()">📄 Alle PDFs</button>
+  <button class="tb-btn" onclick="openPflanzenModal()">🌿 Alle Pflanzen</button>
+</div>
+
+<!-- ELEVATOR PITCH MODAL -->
+<div id="pitch-modal">
+  <button id="pitch-close" onclick="closePitchModal()">✕</button>
+  <div id="pitch-inner">
+    <div id="pitch-eyebrow">Gartengestaltung · Deià, Mallorca</div>
+    <h1 id="pitch-title">Casa Tortuga</h1>
+    <p id="pitch-statement">Ein Garten für eine Finca mit Charakter. Sieben Bereiche, eine Handschrift — mediterran, robust, zeitlos. Jede Pflanze wurde für das Klima Mallorcas ausgewählt: trockenresistent, pflegeleicht, ziegensicher. Das Ergebnis ist ein Außenraum der funktioniert — und der bleibt.</p>
+    <div id="pitch-stats">
+      <div class="pitch-stat"><span class="ps-num">7</span><span class="ps-label">Bereiche</span></div>
+      <div class="pitch-stat"><span class="ps-num">~25</span><span class="ps-label">Pflanzenarten</span></div>
+      <div class="pitch-stat"><span class="ps-num">100%</span><span class="ps-label">Ziegensicher</span></div>
+      <div class="pitch-stat"><span class="ps-num">0</span><span class="ps-label">Kompromisse</span></div>
+    </div>
+    <div id="pitch-areas-label">DIE SIEBEN BEREICHE</div>
+    <div id="pitch-areas"></div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div id="pdf-modal">
+  <div class="overlay-modal-inner">
+    <div class="overlay-modal-header">
+      <span class="overlay-modal-title">📄 Alle Dokumente</span>
+      <button class="overlay-modal-close" onclick="document.getElementById('pdf-modal').classList.remove('open')">✕</button>
+    </div>
+    <div id="pdf-list"></div>
+  </div>
+</div>
+
+<!-- PFLANZEN MODAL -->
+<div id="pflanzen-modal">
+  <div class="overlay-modal-inner">
+    <div class="overlay-modal-header">
+      <span class="overlay-modal-title">🌿 Alle Pflanzen</span>
+      <button class="overlay-modal-close" onclick="document.getElementById('pflanzen-modal').classList.remove('open')">✕</button>
+    </div>
+    <div id="pflanzen-list"></div>
+  </div>
+</div>
 
 <div id="edit-bar" style="display:none">
   <div id="edit-status"></div>
@@ -467,9 +971,9 @@ const areas = {
       'renders/area1/area1_pflanze_agapanthus.png',
     ],
     downloads: [
-      { label: 'Pflanzenliste Baumschule', file: '../Pflanzenliste_Baumschule_v4.pdf', icon: '🌿' },
-      { label: 'Ziegenanalyse', file: '../Ziegenanalyse.pdf', icon: '🐐' },
-      { label: 'Pflanzinseln Konzept', file: '../Pflanzinseln_PortalsNous.pdf', icon: '📐' },
+      { label: 'Pflanzenliste Baumschule', file: 'Pflanzenliste_Baumschule_v4.pdf', icon: '🌿' },
+      { label: 'Ziegenanalyse', file: 'Ziegenanalyse.pdf', icon: '🐐' },
+      { label: 'Pflanzinseln Konzept', file: 'Pflanzinseln_PortalsNous.pdf', icon: '📐' },
 
     ]
   },
@@ -507,14 +1011,15 @@ const areas = {
       { name: 'Cordyline australis', common: 'Keulenlilie', wikiUrl: 'https://en.wikipedia.org/wiki/Cordyline_australis', role: 'Solitär · Höhe ⭐ Favorit', why: 'Tropisch wirkende Palmenform, sehr robust. Scharfe Blattspitzen deterrieren Ziegen — Robins Favorit für Area 2.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/cordyline_australis.jpg' },
     ],
     downloads: [
-      { label: 'Gefäße — Allgemeine Analyse', file: '../Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
-      { label: 'Atelier Vierkant — Gefäße & Formsprache', file: '../Design_Analyse_ATV.pdf', icon: '🏺' },
-      { label: 'Design Analyse Domani', file: '../Design_Analyse_Domani.pdf', icon: '📋' },
-      { label: 'Design Analyse Foronda', file: '../Design_Analyse_Foronda.pdf', icon: '📋' },
+      { label: 'Gefäße — Allgemeine Analyse', file: 'Design_Analyse_allg_Gefaesse.pdf', icon: '🏺' },
+      { label: 'Atelier Vierkant — Gefäße & Formsprache', file: 'Design_Analyse_ATV.pdf', icon: '🏺' },
+      { label: 'Design Analyse Domani', file: 'Design_Analyse_Domani.pdf', icon: '📋' },
+      { label: 'Design Analyse Foronda', file: 'Design_Analyse_Foronda.pdf', icon: '📋' },
     ]
   },
   '3': {
     label: '3', color: '#2e7d32', text: '#fff',
+    description: 'Treppenabgang zur unteren Terrasse — ein schmaler Streifen zwischen Stufen, Fels und Pool-Technik. Ziel: den Übergang natürlich gestalten, Kanten weich begrünen und den Weg einladend rahmen. Trockenresistente Bodendecker und strukturgebende Stauden sorgen für ein gepflegtes, naturnahes Bild ohne Wartungsaufwand.',
     title: 'Area 3 — Treppe runter · Pool-Technik · Bepflanzung',
     renderPairs: [
       { ist: 'fotos/area3/area3_treppenabgang_beet_oben.jpg', soll: 'renders/area3/area3_treppenabgang_beet_oben_steinweg.png', label: 'Treppenabgang — Beet → Steinweg' },
@@ -538,14 +1043,22 @@ const areas = {
   },
   '4': {
     label: '4', color: '#2e7d32', text: '#fff',
+    description: 'Die private Aussichtsplattform — ein Rückzugsort mit Blick aufs Meer. Der Bereich soll mediterrane Stimmung ausstrahlen, dabei komplett ziegensicher und wartungsarm sein. Perovskia ersetzt Lavendel optisch, ist aber robust genug für diese exponierte Lage.',
     title: 'Area 4 — Aussichtsplattform · Privatbereich',
     render: 'renders/area4/area4_render_v1.jpg',
     photos: [
       'area4/area4_steinterrasse_liege_meerblick.jpg',
-    ]
+    ],
+    plants: [
+      { name: 'Perovskia atriplicifolia', common: 'Russischer Salbei', wikiDe: 'Silber-Perowskie', role: 'Hauptbepflanzung · Lavendel-Lookalike', why: 'Sieht identisch zu Lavendel aus — silbrige Stängel, lila Blütenähren — aber Ziegen meiden ihn wegen des intensiven Dufts. Extrem trockenresistent, perfekt für Mallorca.', ziege: 'sicher', ziegeLabel: '✅ Ziegensicher', img: 'renders/plants/perovskia_atriplicifolia.jpg' },
+    ],
+    downloads: [
+      { label: 'Perovskia atriplicifolia — Analyse Area 4', file: 'Perovskia_Analyse_Area4.pdf', icon: '🌿' },
+    ],
   },
   '5': {
     label: '5', color: '#2e7d32', text: '#fff',
+    description: 'Der Übergang zum Nachbargrundstück — bisher offen und unstrukturiert. Ziel: einen grünen, dichten Sichtschutz schaffen der das Grundstück klar abgrenzt und gleichzeitig zum mediterranen Gesamtbild passt. Alle Pflanzen sind ziegensicher und kommen mit minimalem Wasser aus.',
     title: 'Area 5 — Zaun zum Nachbarn',
     render: 'renders/area5/area5_render_v1.jpg',
     photos: [
@@ -564,6 +1077,7 @@ const areas = {
   },
   '6': {
     label: '6', color: '#2e7d32', text: '#fff',
+    description: 'Wilder Felshang mit Funkmast — eine Zone die bewusst natürlich bleibt, aber gezielt aufgewertet wird. Skulpturale Pflanzen setzen Akzente gegen den rauen Felshintergrund. Kein Bewässerungssystem nötig — alles wächst im natürlichen Rhythmus des Klimas.',
     title: 'Area 6 — Berg · Funkmast',
     render: 'renders/area6/area6_render_v1.jpg',
     photos: [
@@ -588,6 +1102,7 @@ const areas = {
   },
   '7': {
     label: '7', color: '#2e7d32', text: '#fff',
+    description: 'Garagendach und Zufahrtsbereich — die erste Begegnung mit dem Anwesen. Ein gepflegter, strukturierter Eindruck hier setzt den Ton für alles Weitere. Robuste Akzentpflanzen schaffen Charakter ohne Pflegeaufwand.',
     title: 'Area 7 — Garagendach · Parkplatz',
     render: 'renders/area7/area7_render_v1.jpg',
     photos: [
@@ -609,7 +1124,44 @@ const positions = {
   '5':    { x:  937/2074, y:1085/1464 },
   '6':    { x: 1257/2074, y: 671/1464 },
   '7':    { x:  609/2074, y: 937/1464 },
+  'HAUS': { x:  820/2074, y: 780/1464 },
 };
+
+function openAreaFromSkizze(idx) {
+  document.getElementById('opener').style.display = 'none';
+  document.getElementById('map-section').style.display = 'block';
+  buildMarkers(); buildPanel();
+  const key = idx === -1 ? 'POOL' : String(idx + 1);
+  setTimeout(() => openModal(key), 300);
+}
+
+function buildPanel() {
+  const seenPlants = new Set();
+  const seenDocs = new Set();
+  const plantsEl = document.getElementById('panel-plants');
+  const docsEl = document.getElementById('panel-docs');
+  plantsEl.innerHTML = '';
+  docsEl.innerHTML = '';
+
+  Object.values(areas).forEach(area => {
+    if (area.plants) area.plants.forEach(p => {
+      if (!seenPlants.has(p.name)) {
+        seenPlants.add(p.name);
+        const wikiUrl = p.wikiUrl || `https://${p.wikiDe ? 'de' : 'en'}.wikipedia.org/wiki/${encodeURIComponent((p.wikiDe || p.name).replace(/ /g,'_'))}`;
+        plantsEl.innerHTML += `<div class="panel-plant">
+          <img src="renders/${p.img || ''}" onerror="this.style.display='none'">
+          <div><a class="panel-plant-name" href="${wikiUrl}" target="_blank" style="color:#ddd;text-decoration:none;" onmouseover="this.style.color='#8bc34a'" onmouseout="this.style.color='#ddd'">${p.name}</a><div class="panel-plant-common">${p.common || ''}</div></div>
+        </div>`;
+      }
+    });
+    if (area.downloads) area.downloads.forEach(d => {
+      if (!seenDocs.has(d.file)) {
+        seenDocs.add(d.file);
+        docsEl.innerHTML += `<a class="panel-doc-link" href="${d.file}" target="_blank">${d.icon || '📄'} ${d.label}</a>`;
+      }
+    });
+  });
+}
 
 function buildMarkers() {
   const container = document.getElementById('map-container');
@@ -991,9 +1543,11 @@ function openModal(key) {
     });
   }
   document.getElementById('modal').classList.add('open');
+  const bb = document.getElementById('back-btn'); if(bb) bb.style.display='none';
+  const pp = document.getElementById('project-panel'); if(pp) pp.style.display='none';
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); const bb = document.getElementById('back-btn'); if(bb) bb.style.display='block'; const pp = document.getElementById('project-panel'); if(pp) pp.style.display='block'; }
 function openLightbox(src) {
   document.getElementById('lightbox-img').src = src;
   document.getElementById('lightbox').classList.add('open');
@@ -1075,7 +1629,136 @@ function copyCoords() {
   });
 }
 
+// ── House marker ────────────────────────────────────────────────────
+function buildHouseMarker() {
+  const container = document.getElementById('map-container');
+  const img = document.getElementById('map-img');
+  function place() {
+    container.querySelectorAll('.marker-house').forEach(m => m.remove());
+    const W = img.offsetWidth, H = img.offsetHeight;
+    const pos = positions['HAUS'];
+    const el = document.createElement('div');
+    el.className = 'marker-house';
+    el.textContent = '🏠';
+    el.title = 'Casa Tortuga — Projektübersicht';
+    el.style.left = (pos.x * W) + 'px';
+    el.style.top = (pos.y * H) + 'px';
+    el.onclick = () => openPitchModal();
+    container.appendChild(el);
+  }
+  if (img.complete && img.naturalWidth > 0) place();
+  else { const orig = img.onload; img.onload = () => { if(orig) orig(); place(); }; }
+  window.addEventListener('resize', place);
+}
+
+// ── Elevator Pitch Modal ─────────────────────────────────────────────
+function openPitchModal() {
+  const modal = document.getElementById('pitch-modal');
+  const areasEl = document.getElementById('pitch-areas');
+  areasEl.innerHTML = '';
+  ['1','2','3','4','5','6','7'].forEach(key => {
+    const a = areas[key];
+    if (!a) return;
+    const card = document.createElement('div');
+    card.className = 'pitch-area-card';
+    const thumb = a.render || (a.renders && a.renders[0]) || (a.renderPairs && a.renderPairs[0] && a.renderPairs[0].soll) || '';
+    card.innerHTML = `
+      ${thumb ? `<img class="pitch-area-thumb" src="${thumb}" loading="lazy" onerror="this.style.display='none'">` : '<div class="pitch-area-thumb" style="background:#1a1a1a"></div>'}
+      <div class="pitch-area-body">
+        <div class="pitch-area-num">Bereich ${key}</div>
+        <div class="pitch-area-name">${(a.title||'').replace(/^Area \d+ — /,'')}</div>
+        <div class="pitch-area-desc">${a.description||''}</div>
+      </div>
+    `;
+    card.onclick = () => { closePitchModal(); openModal(key); };
+    areasEl.appendChild(card);
+  });
+  modal.classList.add('open');
+}
+
+function closePitchModal() {
+  document.getElementById('pitch-modal').classList.remove('open');
+}
+
+// ── PDF Modal ────────────────────────────────────────────────────────
+function openPDFModal() {
+  const listEl = document.getElementById('pdf-list');
+  listEl.innerHTML = '';
+  const seenFiles = new Set();
+  ['1','2','3','4','5','6','7'].forEach(key => {
+    const a = areas[key];
+    if (!a || !a.downloads || a.downloads.length === 0) return;
+    const label = document.createElement('div');
+    label.className = 'pdf-section-label';
+    label.textContent = a.title || ('Area ' + key);
+    listEl.appendChild(label);
+    a.downloads.forEach(dl => {
+      if (seenFiles.has(dl.file)) return;
+      seenFiles.add(dl.file);
+      const link = document.createElement('a');
+      link.className = 'pdf-entry';
+      link.href = dl.file;
+      link.target = '_blank';
+      link.innerHTML = `
+        <div class="pdf-entry-left">
+          <span class="pdf-entry-icon">${dl.icon || '📄'}</span>
+          <div>
+            <div class="pdf-entry-name">${dl.label}</div>
+            <div class="pdf-entry-area">${a.title || ('Area ' + key)}</div>
+          </div>
+        </div>
+        <span class="pdf-entry-dl">↓ PDF</span>
+      `;
+      listEl.appendChild(link);
+    });
+  });
+  document.getElementById('pdf-modal').classList.add('open');
+}
+
+// ── Pflanzen Modal ───────────────────────────────────────────────────
+function openPflanzenModal() {
+  const listEl = document.getElementById('pflanzen-list');
+  listEl.innerHTML = '';
+  const seenPlants = new Map();
+  ['1','2','3','4','5','6','7'].forEach(key => {
+    const a = areas[key];
+    if (!a || !a.plants) return;
+    a.plants.forEach(p => {
+      if (!seenPlants.has(p.name)) seenPlants.set(p.name, { plant: p, areaLabels: [] });
+      seenPlants.get(p.name).areaLabels.push('Bereich ' + key);
+    });
+  });
+  seenPlants.forEach(({ plant: p, areaLabels }) => {
+    const card = document.createElement('div');
+    card.className = 'pfl-card';
+    const wikiUrl = p.wikiUrl || `https://${p.wikiDe ? 'de' : 'en'}.wikipedia.org/wiki/${encodeURIComponent((p.wikiDe || p.name).replace(/ /g,'_'))}`;
+    card.innerHTML = `
+      ${p.img ? `<img src="${p.img}" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="pfl-card-body">
+        <div class="pfl-card-name">${p.name}</div>
+        <div class="pfl-card-common">${p.common || ''}</div>
+        <div class="pfl-card-areas">${areaLabels.join(' · ')}</div>
+        <div class="pfl-card-ziege">${p.ziegeLabel || ''}</div>
+      </div>
+    `;
+    card.style.cursor = 'pointer';
+    card.onclick = () => window.open(wikiUrl, '_blank');
+    listEl.appendChild(card);
+  });
+  document.getElementById('pflanzen-modal').classList.add('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePitchModal();
+    document.getElementById('pdf-modal').classList.remove('open');
+    document.getElementById('pflanzen-modal').classList.remove('open');
+  }
+});
+
 buildMarkers();
+buildHouseMarker();
 </script>
+</section>
 </body>
 </html>

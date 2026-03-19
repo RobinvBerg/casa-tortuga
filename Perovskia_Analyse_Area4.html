@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Perovskia atriplicifolia — Pflanzenanalyse Area 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #faf9f6;
+    color: #2c2c2c;
+    font-size: 11pt;
+    line-height: 1.7;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 18mm 16mm 18mm;
+    background: #fff;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 2px solid #b8975a;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .header-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22pt;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+  }
+  .header-left .subtitle {
+    font-size: 9.5pt;
+    color: #888;
+    margin-top: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-right {
+    text-align: right;
+    font-size: 9pt;
+    color: #aaa;
+  }
+  .header-right .project {
+    font-size: 10pt;
+    color: #b8975a;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* Hero Photo */
+  .hero-photo {
+    width: 100%;
+    height: 72mm;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  /* Badge Row */
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+  .badge-blue  { background: #e3f2fd; color: #1565c0; }
+  .badge-gold  { background: #fff8e1; color: #b8975a; }
+  .badge-gray  { background: #f0f0f0; color: #555; }
+
+  /* Section */
+  .section {
+    margin-bottom: 22px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 13pt;
+    color: #1a1a1a;
+    border-left: 3px solid #b8975a;
+    padding-left: 10px;
+    margin-bottom: 12px;
+  }
+
+  /* Fact Grid */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .fact-box {
+    background: #faf9f6;
+    border: 1px solid #ece8e0;
+    border-radius: 4px;
+    padding: 12px 14px;
+  }
+  .fact-label {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #aaa;
+    margin-bottom: 3px;
+  }
+  .fact-value {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #2c2c2c;
+  }
+  .fact-value.green { color: #2e7d32; }
+  .fact-value.gold  { color: #b8975a; }
+
+  /* Argument List */
+  .arg-list {
+    list-style: none;
+    padding: 0;
+  }
+  .arg-list li {
+    padding: 10px 0 10px 28px;
+    border-bottom: 1px solid #f0ece4;
+    position: relative;
+    font-size: 10.5pt;
+  }
+  .arg-list li:last-child { border-bottom: none; }
+  .arg-list li::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 0;
+    font-size: 14pt;
+  }
+  .arg-list li strong {
+    display: block;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+  }
+  .arg-list li span {
+    color: #555;
+    font-size: 10pt;
+  }
+
+  /* Ziegen Box */
+  .ziegen-box {
+    background: #e8f5e9;
+    border: 1.5px solid #a5d6a7;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+  }
+  .ziegen-box .ziegen-title {
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 11pt;
+    margin-bottom: 6px;
+  }
+  .ziegen-box p {
+    font-size: 10pt;
+    color: #388e3c;
+    line-height: 1.6;
+  }
+
+  /* Comparison Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+    margin-top: 4px;
+  }
+  th {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 9.5pt;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ece8e0;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #faf9f6; }
+  .td-check { color: #2e7d32; font-weight: 700; }
+  .td-cross { color: #c62828; font-weight: 700; }
+  .td-warn  { color: #e65100; font-weight: 700; }
+
+  /* Footer */
+  .footer {
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #ece8e0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: #bbb;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Perovskia atriplicifolia</h1>
+      <div class="subtitle">Pflanzenanalyse · Area 4 — Aussichtsplattform</div>
+    </div>
+    <div class="header-right">
+      <div class="project">Casa Tortuga · Deià, Mallorca</div>
+      <div>März 2026</div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <img class="hero-photo" src="renders/plants/perovskia_atriplicifolia.jpg" alt="Perovskia atriplicifolia">
+
+  <!-- Badges -->
+  <div class="badge-row">
+    <span class="badge badge-green">✅ Ziegensicher</span>
+    <span class="badge badge-gold">☀️ Vollsonne · Küstenexposition</span>
+    <span class="badge badge-blue">💧 Sehr trockenresistent</span>
+    <span class="badge badge-gray">🌿 Lavendel-Optik</span>
+    <span class="badge badge-gold">🌅 Sundowner-Terrasse</span>
+  </div>
+
+  <!-- Standort-Facts -->
+  <div class="section">
+    <div class="section-title">Standortprofil Area 4</div>
+    <div class="fact-grid">
+      <div class="fact-box">
+        <div class="fact-label">Lage</div>
+        <div class="fact-value">Felsplateau · direkt am Meer</div>
+      </div>
+      <div class="fact-box">
+        <div class="fact-label">Exposition</div>
+        <div class="fact-value gold">West · Vollsonne ab Mittag</div>
+      </div>
+      <div class="fact-box">
+        <div class="fact-label">Besonderheit</div>
+        <div class="fact-value">Sundowner-Location · offene Meeraussicht</div>
+      </div>
+      <div class="fact-box">
+        <div class="fact-label">Herausforderung</div>
+        <div class="fact-value">Salzwind · Trockenheit · Ziegen</div>
+      </div>
+      <div class="fact-box">
+        <div class="fact-label">Boden</div>
+        <div class="fact-value">Kalkhaltiger Felsboden, drainiert</div>
+      </div>
+      <div class="fact-box">
+        <div class="fact-label">Wasser</div>
+        <div class="fact-value green">Kein Bewässerungssystem nötig</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warum Perovskia -->
+  <div class="section">
+    <div class="section-title">Warum Perovskia an dieser Stelle?</div>
+    <ul class="arg-list">
+      <li data-icon="🌅">
+        <strong>Perfekt für die Sundowner-Atmosphäre</strong>
+        <span>Die silbrig-lila Blütenähren leuchten im Abendlicht besonders intensiv. Wenn die Sonne über dem Meer untergeht, erzeugt Perovskia genau den romantischen, provenzalischen Effekt — ein natürliches Stimmungselement für die schönste Stunde des Tages.</span>
+      </li>
+      <li data-icon="🪨">
+        <strong>Gemacht für exponierte Felspositionen</strong>
+        <span>Perovskia ist ursprünglich in den Steppen Zentralasiens heimisch — er liebt karge, steinige, kalkhaltige Böden und volle Sonnenexposition. Je trockener und exponierter, desto besser. Genau das bietet Area 4 mit dem freistehenden Felsplateau.</span>
+      </li>
+      <li data-icon="🌊">
+        <strong>Salzwindresistent · Küstentauglich</strong>
+        <span>Die lederartigen, aromatischen Blätter und verholzten Stängel sind robust gegenüber Salz und Wind — eine Eigenschaft die viele mediterrane Zierpflanzen nicht mitbringen. Area 4 ist direkt dem Meereswind ausgesetzt; Perovskia hält das problemlos aus.</span>
+      </li>
+      <li data-icon="💧">
+        <strong>Null Bewässerung nach Eingewöhnung</strong>
+        <span>Nach der ersten Saison kommt Perovskia komplett ohne Bewässerung aus. Tief verwurzelt, zieht er sich in der Sommerhitze zurück und treibt jedes Frühjahr neu aus — wartungsarm, systemunabhängig, ideal für eine Ferienimmobilie.</span>
+      </li>
+      <li data-icon="🌿">
+        <strong>Lavendel-Optik ohne Lavendel-Probleme</strong>
+        <span>Auf Distanz ist Perovskia von Lavendel nicht zu unterscheiden: silbrig-graues Laub, hohe lilafarbene Blütenähren. Der entscheidende Unterschied: Ziegen verschmähen ihn konsequent, während Lavendel auf Mallorca regelmäßig abgefressen wird.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Ziegen-Box -->
+  <div class="ziegen-box">
+    <div class="ziegen-title">🐐 Ziegensicherheit — warum Perovskia sicher ist</div>
+    <p>
+      Perovskia enthält hochkonzentrierte ätherische Öle (vor allem Rosmarinöl-Komponenten und Campher), die Ziegen instinktiv meiden. Der intensive, durchdringende Geruch — besonders wenn die Pflanze durch Wind oder Berührung aktiviert wird — wirkt für Ziegen abstoßend. In Feldversuchen auf dem Mittelmeerraum wurde Perovskia selbst in Regionen mit hohem Ziegendruck kaum angefressen. Kein Zaunschutz notwendig.
+    </p>
+  </div>
+
+  <!-- Vergleich -->
+  <div class="section">
+    <div class="section-title">Vergleich: Perovskia vs. Lavendel für Area 4</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Eigenschaft</th>
+          <th>Perovskia</th>
+          <th>Lavendel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Optik / Blütenähren</td>
+          <td class="td-check">✔ Sehr ähnlich, luftiger</td>
+          <td class="td-check">✔ Klassisch lila</td>
+        </tr>
+        <tr>
+          <td>Ziegensicher</td>
+          <td class="td-check">✔ Ja — ätherische Öle abschreckend</td>
+          <td class="td-cross">✘ Nein — wird abgefressen</td>
+        </tr>
+        <tr>
+          <td>Salzwindresistenz</td>
+          <td class="td-check">✔ Sehr hoch</td>
+          <td class="td-warn">⚠ Mittel</td>
+        </tr>
+        <tr>
+          <td>Trockenresistenz</td>
+          <td class="td-check">✔ Extrem — kein Wasser nötig</td>
+          <td class="td-warn">⚠ Mittel — braucht gelegentlich Wasser</td>
+        </tr>
+        <tr>
+          <td>Felsboden / Kalk</td>
+          <td class="td-check">✔ Ideal</td>
+          <td class="td-warn">⚠ Möglich, aber Humus hilfreich</td>
+        </tr>
+        <tr>
+          <td>Bewässerung nötig</td>
+          <td class="td-check">✔ Nein (nach Jahr 1)</td>
+          <td class="td-warn">⚠ Gelegentlich</td>
+        </tr>
+        <tr>
+          <td>Blütezeit</td>
+          <td class="td-check">✔ Juni–Oktober (länger als Lavendel)</td>
+          <td>Mai–August</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>Casa Tortuga · Deià, Mallorca · Gartenkonzept 2026</span>
+    <span>Perovskia atriplicifolia · Area 4 Analyse</span>
+  </div>
+
+</div>
+</body>
+</html>
