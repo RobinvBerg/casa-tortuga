@@ -1172,6 +1172,7 @@ function buildMarkers() {
     const W = img.offsetWidth, H = img.offsetHeight;
 
     for (const [key, pos] of Object.entries(positions)) {
+      if (key === 'HAUS') continue; // rendered separately as house marker
       const area = areas[key];
       const x = pos.x * W;
       const y = pos.y * H;
