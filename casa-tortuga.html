@@ -861,45 +861,7 @@ body.edit-mode .marker { pointer-events: none; }
   <button class="tb-btn" onclick="openPflanzenModal()">🌿 Alle Pflanzen</button>
 </div>
 
-<!-- ELEVATOR PITCH MODAL -->
-<div id="pitch-modal">
-  <button id="pitch-close" onclick="closePitchModal()">✕</button>
-  <div id="pitch-inner">
-    <div id="pitch-eyebrow">Gartengestaltung · Deià, Mallorca</div>
-    <h1 id="pitch-title">Casa Tortuga</h1>
-    <p id="pitch-statement">Ein Garten für eine Finca mit Charakter. Sieben Bereiche, eine Handschrift — mediterran, robust, zeitlos. Jede Pflanze wurde für das Klima Mallorcas ausgewählt: trockenresistent, pflegeleicht, ziegensicher. Das Ergebnis ist ein Außenraum der funktioniert — und der bleibt.</p>
-    <div id="pitch-stats">
-      <div class="pitch-stat"><span class="ps-num">7</span><span class="ps-label">Bereiche</span></div>
-      <div class="pitch-stat"><span class="ps-num">~25</span><span class="ps-label">Pflanzenarten</span></div>
-      <div class="pitch-stat"><span class="ps-num">100%</span><span class="ps-label">Ziegensicher</span></div>
-      <div class="pitch-stat"><span class="ps-num">0</span><span class="ps-label">Kompromisse</span></div>
-    </div>
-    <div id="pitch-areas-label">DIE SIEBEN BEREICHE</div>
-    <div id="pitch-areas"></div>
-  </div>
-</div>
 
-<!-- PDF MODAL -->
-<div id="pdf-modal">
-  <div class="overlay-modal-inner">
-    <div class="overlay-modal-header">
-      <span class="overlay-modal-title">📄 Alle Dokumente</span>
-      <button class="overlay-modal-close" onclick="document.getElementById('pdf-modal').classList.remove('open')">✕</button>
-    </div>
-    <div id="pdf-list"></div>
-  </div>
-</div>
-
-<!-- PFLANZEN MODAL -->
-<div id="pflanzen-modal">
-  <div class="overlay-modal-inner">
-    <div class="overlay-modal-header">
-      <span class="overlay-modal-title">🌿 Alle Pflanzen</span>
-      <button class="overlay-modal-close" onclick="document.getElementById('pflanzen-modal').classList.remove('open')">✕</button>
-    </div>
-    <div id="pflanzen-list"></div>
-  </div>
-</div>
 
 <div id="edit-bar" style="display:none">
   <div id="edit-status"></div>
@@ -1761,5 +1723,46 @@ buildMarkers();
 buildHouseMarker();
 </script>
 </section>
+
+<!-- ELEVATOR PITCH MODAL -->
+<div id="pitch-modal">
+  <button id="pitch-close" onclick="closePitchModal()">✕</button>
+  <div id="pitch-inner">
+    <div id="pitch-eyebrow">Gartengestaltung · Deià, Mallorca</div>
+    <h1 id="pitch-title">Casa Tortuga</h1>
+    <p id="pitch-statement">Ein Garten für eine Finca mit Charakter. Sieben Bereiche, eine Handschrift — mediterran, robust, zeitlos. Jede Pflanze wurde für das Klima Mallorcas ausgewählt: trockenresistent, pflegeleicht, ziegensicher. Das Ergebnis ist ein Außenraum der funktioniert — und der bleibt.</p>
+    <div id="pitch-stats">
+      <div class="pitch-stat"><span class="ps-num">7</span><span class="ps-label">Bereiche</span></div>
+      <div class="pitch-stat"><span class="ps-num">~25</span><span class="ps-label">Pflanzenarten</span></div>
+      <div class="pitch-stat"><span class="ps-num">100%</span><span class="ps-label">Ziegensicher</span></div>
+      <div class="pitch-stat"><span class="ps-num">0</span><span class="ps-label">Kompromisse</span></div>
+    </div>
+    <div id="pitch-areas-label">DIE SIEBEN BEREICHE</div>
+    <div id="pitch-areas"></div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div id="pdf-modal">
+  <div class="overlay-modal-inner">
+    <div class="overlay-modal-header">
+      <span class="overlay-modal-title">📄 Alle Dokumente</span>
+      <button class="overlay-modal-close" onclick="document.getElementById('pdf-modal').classList.remove('open')">✕</button>
+    </div>
+    <div id="pdf-list"></div>
+  </div>
+</div>
+
+<!-- PFLANZEN MODAL -->
+<div id="pflanzen-modal">
+  <div class="overlay-modal-inner">
+    <div class="overlay-modal-header">
+      <span class="overlay-modal-title">🌿 Alle Pflanzen</span>
+      <button class="overlay-modal-close" onclick="document.getElementById('pflanzen-modal').classList.remove('open')">✕</button>
+    </div>
+    <div id="pflanzen-list"></div>
+  </div>
+</div>
+
 </body>
 </html>
